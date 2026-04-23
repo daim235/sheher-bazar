@@ -338,6 +338,7 @@ function ProviderApplicationCard({ userId }: { userId: string }) {
   const [bio, setBio] = useState("");
   const [phone, setPhone] = useState("");
   const [city, setCity] = useState("Sargodha");
+  const [email, setEmail] = useState("");
 
   const load = async () => {
     setLoading(true);
@@ -353,6 +354,7 @@ function ProviderApplicationCard({ userId }: { userId: string }) {
       setBio(data.bio ?? "");
       setPhone(data.phone ?? "");
       setCity(data.city ?? "Sargodha");
+      setEmail(data.contact_email ?? "");
     }
     setLoading(false);
   };
