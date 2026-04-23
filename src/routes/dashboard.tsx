@@ -16,6 +16,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "
 import { Loader2, Plus, MessageCircle, Send, Pencil, Trash2, Store, Package, ShoppingBag, BarChart3 } from "lucide-react";
 import { toast } from "sonner";
 import { getMyVendorOrders, updateOrderStatus, type OrderStatus } from "@/lib/api/orders";
+import { ImageUploader } from "@/components/ImageUploader";
 
 const dashSearch = z.object({
   tab: fallback(
@@ -50,7 +51,7 @@ interface Service {
 }
 interface Conversation { id: string; user1_id: string; user2_id: string; last_message_at: string; }
 interface Message { id: string; conversation_id: string; sender_id: string; content: string; created_at: string; }
-interface Profile { id: string; full_name: string | null; phone: string | null; city: string | null; bio: string | null; }
+interface Profile { id: string; full_name: string | null; phone: string | null; city: string | null; bio: string | null; avatar_url: string | null; }
 interface Vendor {
   id: string; owner_id: string; shop_name: string; slug: string; description: string | null;
   city: string | null; logo_url: string | null; banner_url: string | null; status: string;
@@ -369,9 +370,26 @@ function ShopTab({ vendor, onUpdate }: { vendor: Vendor; onUpdate: (v: Vendor) =
         <div><Label>Contact email</Label><Input type="email" value={form.contact_email ?? ""} onChange={(e) => setForm({ ...form, contact_email: e.target.value })} /></div>
         <div><Label>City</Label><Input value={form.city ?? ""} onChange={(e) => setForm({ ...form, city: e.target.value })} /></div>
         <div><Label>Description</Label><Textarea rows={4} value={form.description ?? ""} onChange={(e) => setForm({ ...form, description: e.target.value })} /></div>
-        <div className="grid sm:grid-cols-2 gap-3">
-          <div><Label>Logo URL</Label><Input value={form.logo_url ?? ""} onChange={(e) => setForm({ ...form, logo_url: e.target.value })} placeholder="https://…" /></div>
-          <div><Label>Banner URL</Label><Input value={form.banner_url ?? ""} onChange={(e) => setForm({ ...form, banner_url: e.target.value })} placeholder="https://…" /></div>
+        <div className="grid sm:grid-cols-2 gap-4 pt-2">
+          <ImageUploader
+            userId={vendor.owner_id}
+            label="Shop logo"
+            hint="Square works best"
+            shape="circle"
+            folder="logo"
+            value={form.logo_url}
+            onChange={(url) => setForm({ ...form, logo_url: url || null })}
+          />
+          <ImageUploader
+            userId={vendor.owner_id}
+            label="Shop banner"
+            hint="Wide image for the top of your shop page"
+            shape="rect"
+            aspectClassName="aspect-[3/1]"
+            folder="banner"
+            value={form.banner_url}
+            onChange={(url) => setForm({ ...form, banner_url: url || null })}
+          />
         </div>
         <Button type="submit" disabled={saving} className="bg-gradient-primary text-primary-foreground">
           {saving && <Loader2 className="h-4 w-4 mr-2 animate-spin" />} Save shop
@@ -769,6 +787,7 @@ function ProfileTab({ userId }: { userId: string }) {
     setSaving(true);
     const { error } = await supabase.from("profiles").update({
       full_name: profile.full_name, phone: profile.phone, city: profile.city, bio: profile.bio,
+      avatar_url: profile.avatar_url,
     }).eq("id", userId);
     setSaving(false);
     if (error) toast.error(error.message); else toast.success("Profile saved");
@@ -779,6 +798,15 @@ function ProfileTab({ userId }: { userId: string }) {
   return (
     <Card className="p-6 max-w-xl">
       <form onSubmit={save} className="space-y-4">
+        <ImageUploader
+          userId={userId}
+          label="Profile photo"
+          hint="Shown on your service listings"
+          shape="circle"
+          folder="avatar"
+          value={profile.avatar_url}
+          onChange={(url) => setProfile({ ...profile, avatar_url: url || null })}
+        />
         <div><Label>Full name</Label><Input value={profile.full_name ?? ""} onChange={(e) => setProfile({ ...profile, full_name: e.target.value })} /></div>
         <div><Label>Phone</Label><Input value={profile.phone ?? ""} onChange={(e) => setProfile({ ...profile, phone: e.target.value })} /></div>
         <div><Label>City</Label><Input value={profile.city ?? ""} onChange={(e) => setProfile({ ...profile, city: e.target.value })} /></div>
