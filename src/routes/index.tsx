@@ -1,6 +1,16 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
-import { Search, Sparkles, Truck, Store, ShieldCheck, Lock, Star, Wrench, ShoppingBag } from "lucide-react";
+import {
+  Search,
+  Sparkles,
+  Truck,
+  Store,
+  ShieldCheck,
+  Lock,
+  Star,
+  Wrench,
+  ShoppingBag,
+} from "lucide-react";
 import { SiteShell } from "@/components/SiteShell";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -14,9 +24,17 @@ export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
       { title: "Shahar Bazar — Sargodha's Own Online Marketplace" },
-      { name: "description", content: "Shop from your favorite local stores in Sargodha. Groceries, services, and more — delivered same-day." },
+      {
+        name: "description",
+        content:
+          "Shop from your favorite local stores in Sargodha. Groceries, services, and more — delivered same-day.",
+      },
       { property: "og:title", content: "Shahar Bazar — Sargodha's Own Online Marketplace" },
-      { property: "og:description", content: "Shop from your favorite local stores in Sargodha. Groceries, services, and more — delivered same-day." },
+      {
+        property: "og:description",
+        content:
+          "Shop from your favorite local stores in Sargodha. Groceries, services, and more — delivered same-day.",
+      },
     ],
   }),
   component: HomePage,
@@ -61,7 +79,10 @@ function HomePage() {
             {t("hero.tagline")}
           </p>
 
-          <form onSubmit={handleSearch} className="mt-10 max-w-3xl mx-auto flex flex-col sm:flex-row gap-3">
+          <form
+            onSubmit={handleSearch}
+            className="mt-10 max-w-3xl mx-auto flex flex-col sm:flex-row gap-3"
+          >
             <div className="flex items-center gap-3 flex-1 px-5 py-2 bg-card rounded-full shadow-elegant">
               <Search className="h-5 w-5 text-muted-foreground shrink-0" />
               <Input
@@ -94,7 +115,9 @@ function HomePage() {
 
       {/* CATEGORIES */}
       <section className="mx-auto max-w-7xl px-6 py-20">
-        <h2 className="text-3xl md:text-5xl font-bold text-center text-primary-deep">{t("section.categories")}</h2>
+        <h2 className="text-3xl md:text-5xl font-bold text-center text-primary-deep">
+          {t("section.categories")}
+        </h2>
 
         <div className="mt-12 grid md:grid-cols-2 gap-6">
           <CategoryCard
@@ -127,7 +150,9 @@ function HomePage() {
       {/* WHY SHAHAR BAZAR */}
       <section className="bg-secondary/40 py-20">
         <div className="mx-auto max-w-7xl px-6">
-          <h2 className="text-3xl md:text-5xl font-bold text-center text-primary-deep">{t("section.why")}</h2>
+          <h2 className="text-3xl md:text-5xl font-bold text-center text-primary-deep">
+            {t("section.why")}
+          </h2>
           <div className="mt-14 grid md:grid-cols-3 gap-10">
             {[
               { icon: Truck, k: "delivery" },
@@ -139,7 +164,9 @@ function HomePage() {
                   <Icon className="h-11 w-11 text-primary" strokeWidth={1.75} />
                 </div>
                 <h3 className="mt-5 font-bold text-xl text-primary-deep">{t(`why.${k}.title`)}</h3>
-                <p className="mt-2 text-base text-muted-foreground max-w-xs mx-auto">{t(`why.${k}.body`)}</p>
+                <p className="mt-2 text-base text-muted-foreground max-w-xs mx-auto">
+                  {t(`why.${k}.body`)}
+                </p>
               </div>
             ))}
           </div>
@@ -148,14 +175,31 @@ function HomePage() {
 
       {/* TESTIMONIALS */}
       <section className="mx-auto max-w-7xl px-6 py-20">
-        <h2 className="text-3xl md:text-5xl font-bold text-center text-primary-deep">{t("section.testimonials")}</h2>
+        <h2 className="text-3xl md:text-5xl font-bold text-center text-primary-deep">
+          {t("section.testimonials")}
+        </h2>
         <div className="mt-12 grid md:grid-cols-3 gap-6">
           {[
-            { name: "Ayesha K.", text: "Same-day grocery delivery in Sargodha — finally! Quality is top notch.", role: "Customer" },
-            { name: "Bilal R.", text: "Booked an electrician in 5 minutes. He arrived on time and did great work.", role: "Customer" },
-            { name: "Hamza S.", text: "I list my shop here and orders come in daily. Best decision for my business.", role: "Vendor" },
+            {
+              name: "Ayesha K.",
+              text: "Same-day grocery delivery in Sargodha — finally! Quality is top notch.",
+              role: "Customer",
+            },
+            {
+              name: "Bilal R.",
+              text: "Booked an electrician in 5 minutes. He arrived on time and did great work.",
+              role: "Customer",
+            },
+            {
+              name: "Hamza S.",
+              text: "I list my shop here and orders come in daily. Best decision for my business.",
+              role: "Vendor",
+            },
           ].map((r) => (
-            <Card key={r.name} className="p-6 bg-gradient-card hover:shadow-elegant transition-base">
+            <Card
+              key={r.name}
+              className="p-6 bg-gradient-card hover:shadow-elegant transition-base"
+            >
               <div className="flex gap-1 text-accent-orange">
                 {Array.from({ length: 5 }).map((_, i) => (
                   <Star key={i} className="h-4 w-4 fill-current" />

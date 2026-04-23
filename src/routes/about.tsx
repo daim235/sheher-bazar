@@ -10,9 +10,17 @@ export const Route = createFileRoute("/about")({
   head: () => ({
     meta: [
       { title: "About — Shahar Bazar" },
-      { name: "description", content: "Shahar Bazar is Sargodha's own online marketplace, connecting customers with trusted local shops and service providers." },
+      {
+        name: "description",
+        content:
+          "Shahar Bazar is Sargodha's own online marketplace, connecting customers with trusted local shops and service providers.",
+      },
       { property: "og:title", content: "About Shahar Bazar" },
-      { property: "og:description", content: "Sargodha's own online marketplace — connecting customers with trusted local shops and services." },
+      {
+        property: "og:description",
+        content:
+          "Sargodha's own online marketplace — connecting customers with trusted local shops and services.",
+      },
     ],
   }),
   component: AboutPage,
@@ -25,7 +33,11 @@ function AboutPage() {
     <SiteShell>
       {/* Hero */}
       <section className="relative overflow-hidden">
-        <img src={heroImg} alt="Sargodha bazaar" className="absolute inset-0 h-full w-full object-cover" />
+        <img
+          src={heroImg}
+          alt="Sargodha bazaar"
+          className="absolute inset-0 h-full w-full object-cover"
+        />
         <div className="absolute inset-0 bg-gradient-to-b from-primary/90 via-primary/85 to-primary/95" />
         <div className="relative mx-auto max-w-5xl px-6 py-20 md:py-28 text-center text-primary-foreground">
           <div className="inline-flex items-center gap-2 px-5 py-2 rounded-full bg-primary-foreground/15 backdrop-blur border border-primary-foreground/20">
@@ -34,8 +46,8 @@ function AboutPage() {
           </div>
           <h1 className="mt-6 text-4xl md:text-6xl font-bold">About Shahar Bazar</h1>
           <p className="mt-5 text-lg md:text-xl text-primary-foreground/90 max-w-2xl mx-auto">
-            We're building Sargodha's own online marketplace — a single place to shop from
-            trusted local stores and book reliable home services, all delivered to your door.
+            We're building Sargodha's own online marketplace — a single place to shop from trusted
+            local stores and book reliable home services, all delivered to your door.
           </p>
         </div>
       </section>
@@ -52,10 +64,14 @@ function AboutPage() {
             </h2>
             <p className="mt-4 text-muted-foreground leading-relaxed">
               From the spice baskets of Company Bagh to the auto workshops of Satellite Town,
-              Sargodha is full of skilled people doing great work. Shahar Bazar gives them a
-              modern storefront and gives you a faster, easier way to support them.
+              Sargodha is full of skilled people doing great work. Shahar Bazar gives them a modern
+              storefront and gives you a faster, easier way to support them.
             </p>
-            <Button asChild size="lg" className="mt-6 bg-gradient-primary text-primary-foreground rounded-full">
+            <Button
+              asChild
+              size="lg"
+              className="mt-6 bg-gradient-primary text-primary-foreground rounded-full"
+            >
               <Link to="/auth">Join Shahar Bazar</Link>
             </Button>
           </div>
@@ -71,14 +87,28 @@ function AboutPage() {
       {/* Values */}
       <section className="bg-secondary/40 py-20">
         <div className="mx-auto max-w-5xl px-6">
-          <h2 className="text-3xl md:text-4xl font-bold text-center text-primary-deep">What we stand for</h2>
+          <h2 className="text-3xl md:text-4xl font-bold text-center text-primary-deep">
+            What we stand for
+          </h2>
           <div className="mt-12 grid md:grid-cols-3 gap-6">
             {[
-              { title: "Local first", body: "Every rupee spent here circulates back into Sargodha's neighborhoods." },
-              { title: "Honest pricing", body: "Vendors set fair prices. No hidden fees, no inflated middlemen." },
-              { title: "Built on trust", body: "Real reviews, verified providers, and human support whenever you need it." },
+              {
+                title: "Local first",
+                body: "Every rupee spent here circulates back into Sargodha's neighborhoods.",
+              },
+              {
+                title: "Honest pricing",
+                body: "Vendors set fair prices. No hidden fees, no inflated middlemen.",
+              },
+              {
+                title: "Built on trust",
+                body: "Real reviews, verified providers, and human support whenever you need it.",
+              },
             ].map((v) => (
-              <Card key={v.title} className="p-6 bg-card border-0 shadow-soft hover:shadow-elegant transition-base">
+              <Card
+                key={v.title}
+                className="p-6 bg-card border-0 shadow-soft hover:shadow-elegant transition-base"
+              >
                 <h3 className="font-bold text-lg text-primary-deep">{v.title}</h3>
                 <p className="mt-2 text-sm text-muted-foreground leading-relaxed">{v.body}</p>
               </Card>

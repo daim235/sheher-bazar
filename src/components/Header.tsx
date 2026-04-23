@@ -45,7 +45,9 @@ export function Header() {
               key={item.to}
               to={item.to}
               className="px-4 py-2 text-base font-medium text-foreground/80 rounded-md hover:text-primary transition-base"
-              activeProps={{ className: "px-4 py-2 text-base font-semibold rounded-md text-primary" }}
+              activeProps={{
+                className: "px-4 py-2 text-base font-semibold rounded-md text-primary",
+              }}
               activeOptions={{ exact: item.to === "/" }}
             >
               {item.label}
@@ -72,7 +74,9 @@ export function Header() {
                   <div className="flex h-7 w-7 items-center justify-center rounded-full bg-gradient-primary text-[11px] font-bold text-primary-foreground">
                     {(user.email ?? "U").charAt(0).toUpperCase()}
                   </div>
-                  <span className="hidden lg:inline max-w-[120px] truncate text-sm">{user.email}</span>
+                  <span className="hidden lg:inline max-w-[120px] truncate text-sm">
+                    {user.email}
+                  </span>
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="w-52">
@@ -87,7 +91,12 @@ export function Header() {
             </DropdownMenu>
           ) : (
             <>
-              <Button asChild size="sm" variant="ghost" className="hidden sm:inline-flex text-base font-medium">
+              <Button
+                asChild
+                size="sm"
+                variant="ghost"
+                className="hidden sm:inline-flex text-base font-medium"
+              >
                 <Link to="/auth">{t("nav.signin")}</Link>
               </Button>
               <Button

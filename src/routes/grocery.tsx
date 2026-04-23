@@ -4,9 +4,16 @@ export const Route = createFileRoute("/grocery")({
   head: () => ({
     meta: [
       { title: "Grocery — Shahar Bazar" },
-      { name: "description", content: "Order groceries, fresh produce, spices, and daily essentials from local Sargodha shops with same-day delivery." },
+      {
+        name: "description",
+        content:
+          "Order groceries, fresh produce, spices, and daily essentials from local Sargodha shops with same-day delivery.",
+      },
       { property: "og:title", content: "Grocery — Shahar Bazar" },
-      { property: "og:description", content: "Order groceries from local Sargodha shops with same-day delivery." },
+      {
+        property: "og:description",
+        content: "Order groceries from local Sargodha shops with same-day delivery.",
+      },
     ],
   }),
   component: GroceryPage,

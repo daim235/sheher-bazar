@@ -24,7 +24,9 @@ export function Footer() {
       <section className="bg-gradient-primary text-primary-foreground">
         <div className="mx-auto max-w-7xl px-6 py-16 text-center">
           <h3 className="text-3xl md:text-4xl font-bold">{t("section.becomeVendor")}</h3>
-          <p className="mt-3 text-primary-foreground/90 text-lg">{t("section.becomeVendor.body")}</p>
+          <p className="mt-3 text-primary-foreground/90 text-lg">
+            {t("section.becomeVendor.body")}
+          </p>
           <Button
             asChild
             size="lg"
@@ -46,12 +48,22 @@ export function Footer() {
               width={1376}
               height={768}
             />
-            <p className="mt-4 text-sm text-primary-foreground/80 leading-relaxed">{t("footer.tagline")}</p>
+            <p className="mt-4 text-sm text-primary-foreground/80 leading-relaxed">
+              {t("footer.tagline")}
+            </p>
             <div className="mt-5 flex gap-3">
-              <a href="#" aria-label="Facebook" className="h-9 w-9 rounded-full bg-primary-foreground/10 hover:bg-primary-foreground/20 flex items-center justify-center transition-base">
+              <a
+                href="#"
+                aria-label="Facebook"
+                className="h-9 w-9 rounded-full bg-primary-foreground/10 hover:bg-primary-foreground/20 flex items-center justify-center transition-base"
+              >
                 <Facebook className="h-4 w-4" />
               </a>
-              <a href="#" aria-label="Instagram" className="h-9 w-9 rounded-full bg-primary-foreground/10 hover:bg-primary-foreground/20 flex items-center justify-center transition-base">
+              <a
+                href="#"
+                aria-label="Instagram"
+                className="h-9 w-9 rounded-full bg-primary-foreground/10 hover:bg-primary-foreground/20 flex items-center justify-center transition-base"
+              >
                 <Instagram className="h-4 w-4" />
               </a>
             </div>
@@ -60,19 +72,41 @@ export function Footer() {
           <div>
             <h4 className="font-semibold mb-4 text-base">{t("footer.quickLinks")}</h4>
             <ul className="space-y-3 text-sm text-primary-foreground/80">
-              <li><Link to="/" className="hover:text-accent-orange transition-base">{t("nav.home")}</Link></li>
-              <li><Link to="/grocery" className="hover:text-accent-orange transition-base">{t("nav.grocery")}</Link></li>
-              <li><Link to="/services" className="hover:text-accent-orange transition-base">{t("nav.services")}</Link></li>
-              <li><Link to="/about" className="hover:text-accent-orange transition-base">{t("nav.about")}</Link></li>
+              <li>
+                <Link to="/" className="hover:text-accent-orange transition-base">
+                  {t("nav.home")}
+                </Link>
+              </li>
+              <li>
+                <Link to="/grocery" className="hover:text-accent-orange transition-base">
+                  {t("nav.grocery")}
+                </Link>
+              </li>
+              <li>
+                <Link to="/services" className="hover:text-accent-orange transition-base">
+                  {t("nav.services")}
+                </Link>
+              </li>
+              <li>
+                <Link to="/about" className="hover:text-accent-orange transition-base">
+                  {t("nav.about")}
+                </Link>
+              </li>
             </ul>
           </div>
 
           <div>
             <h4 className="font-semibold mb-4 text-base">{t("footer.contact")}</h4>
             <ul className="space-y-3 text-sm text-primary-foreground/80">
-              <li className="flex items-center gap-2"><MapPin className="h-4 w-4 shrink-0" /> Sargodha, Punjab, Pakistan</li>
-              <li className="flex items-center gap-2"><Phone className="h-4 w-4 shrink-0" /> +92 XXX XXXXXXX</li>
-              <li className="flex items-center gap-2"><Mail className="h-4 w-4 shrink-0" /> info@shaharbazar.pk</li>
+              <li className="flex items-center gap-2">
+                <MapPin className="h-4 w-4 shrink-0" /> Sargodha, Punjab, Pakistan
+              </li>
+              <li className="flex items-center gap-2">
+                <Phone className="h-4 w-4 shrink-0" /> +92 XXX XXXXXXX
+              </li>
+              <li className="flex items-center gap-2">
+                <Mail className="h-4 w-4 shrink-0" /> info@shaharbazar.pk
+              </li>
             </ul>
           </div>
 
