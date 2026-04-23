@@ -290,6 +290,21 @@ function VendorApplicationCard({ userId }: { userId: string }) {
         </div>
 
         <div>
+          <Label htmlFor="vendor_email">Contact email (Gmail) *</Label>
+          <Input
+            id="vendor_email"
+            type="email"
+            value={contactEmail}
+            onChange={(e) => setContactEmail(e.target.value)}
+            placeholder="yourshop@gmail.com"
+            required
+          />
+          <p className="text-xs text-muted-foreground mt-1">
+            We'll use this email to reach you about your shop.
+          </p>
+        </div>
+
+        <div>
           <Label htmlFor="desc">Description</Label>
           <Textarea
             id="desc"
