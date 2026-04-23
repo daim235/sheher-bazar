@@ -787,6 +787,7 @@ function ProfileTab({ userId }: { userId: string }) {
     setSaving(true);
     const { error } = await supabase.from("profiles").update({
       full_name: profile.full_name, phone: profile.phone, city: profile.city, bio: profile.bio,
+      avatar_url: profile.avatar_url,
     }).eq("id", userId);
     setSaving(false);
     if (error) toast.error(error.message); else toast.success("Profile saved");
@@ -797,6 +798,15 @@ function ProfileTab({ userId }: { userId: string }) {
   return (
     <Card className="p-6 max-w-xl">
       <form onSubmit={save} className="space-y-4">
+        <ImageUploader
+          userId={userId}
+          label="Profile photo"
+          hint="Shown on your service listings"
+          shape="circle"
+          folder="avatar"
+          value={profile.avatar_url}
+          onChange={(url) => setProfile({ ...profile, avatar_url: url || null })}
+        />
         <div><Label>Full name</Label><Input value={profile.full_name ?? ""} onChange={(e) => setProfile({ ...profile, full_name: e.target.value })} /></div>
         <div><Label>Phone</Label><Input value={profile.phone ?? ""} onChange={(e) => setProfile({ ...profile, phone: e.target.value })} /></div>
         <div><Label>City</Label><Input value={profile.city ?? ""} onChange={(e) => setProfile({ ...profile, city: e.target.value })} /></div>
