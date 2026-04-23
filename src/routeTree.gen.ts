@@ -10,8 +10,10 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as ServicesRouteImport } from './routes/services'
+import { Route as ResetPasswordRouteImport } from './routes/reset-password'
 import { Route as MarketplaceRouteImport } from './routes/marketplace'
 import { Route as GroceryRouteImport } from './routes/grocery'
+import { Route as ForgotPasswordRouteImport } from './routes/forgot-password'
 import { Route as DashboardRouteImport } from './routes/dashboard'
 import { Route as CartRouteImport } from './routes/cart'
 import { Route as BecomeRouteImport } from './routes/become'
@@ -27,6 +29,11 @@ const ServicesRoute = ServicesRouteImport.update({
   path: '/services',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ResetPasswordRoute = ResetPasswordRouteImport.update({
+  id: '/reset-password',
+  path: '/reset-password',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const MarketplaceRoute = MarketplaceRouteImport.update({
   id: '/marketplace',
   path: '/marketplace',
@@ -35,6 +42,11 @@ const MarketplaceRoute = MarketplaceRouteImport.update({
 const GroceryRoute = GroceryRouteImport.update({
   id: '/grocery',
   path: '/grocery',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ForgotPasswordRoute = ForgotPasswordRouteImport.update({
+  id: '/forgot-password',
+  path: '/forgot-password',
   getParentRoute: () => rootRouteImport,
 } as any)
 const DashboardRoute = DashboardRouteImport.update({
@@ -91,8 +103,10 @@ export interface FileRoutesByFullPath {
   '/become': typeof BecomeRoute
   '/cart': typeof CartRoute
   '/dashboard': typeof DashboardRoute
+  '/forgot-password': typeof ForgotPasswordRoute
   '/grocery': typeof GroceryRoute
   '/marketplace': typeof MarketplaceRoute
+  '/reset-password': typeof ResetPasswordRoute
   '/services': typeof ServicesRoute
   '/service/$id': typeof ServiceIdRoute
   '/shop/$slug': typeof ShopSlugRoute
@@ -105,8 +119,10 @@ export interface FileRoutesByTo {
   '/become': typeof BecomeRoute
   '/cart': typeof CartRoute
   '/dashboard': typeof DashboardRoute
+  '/forgot-password': typeof ForgotPasswordRoute
   '/grocery': typeof GroceryRoute
   '/marketplace': typeof MarketplaceRoute
+  '/reset-password': typeof ResetPasswordRoute
   '/services': typeof ServicesRoute
   '/service/$id': typeof ServiceIdRoute
   '/shop/$slug': typeof ShopSlugRoute
@@ -120,8 +136,10 @@ export interface FileRoutesById {
   '/become': typeof BecomeRoute
   '/cart': typeof CartRoute
   '/dashboard': typeof DashboardRoute
+  '/forgot-password': typeof ForgotPasswordRoute
   '/grocery': typeof GroceryRoute
   '/marketplace': typeof MarketplaceRoute
+  '/reset-password': typeof ResetPasswordRoute
   '/services': typeof ServicesRoute
   '/service/$id': typeof ServiceIdRoute
   '/shop/$slug': typeof ShopSlugRoute
@@ -136,8 +154,10 @@ export interface FileRouteTypes {
     | '/become'
     | '/cart'
     | '/dashboard'
+    | '/forgot-password'
     | '/grocery'
     | '/marketplace'
+    | '/reset-password'
     | '/services'
     | '/service/$id'
     | '/shop/$slug'
@@ -150,8 +170,10 @@ export interface FileRouteTypes {
     | '/become'
     | '/cart'
     | '/dashboard'
+    | '/forgot-password'
     | '/grocery'
     | '/marketplace'
+    | '/reset-password'
     | '/services'
     | '/service/$id'
     | '/shop/$slug'
@@ -164,8 +186,10 @@ export interface FileRouteTypes {
     | '/become'
     | '/cart'
     | '/dashboard'
+    | '/forgot-password'
     | '/grocery'
     | '/marketplace'
+    | '/reset-password'
     | '/services'
     | '/service/$id'
     | '/shop/$slug'
@@ -179,8 +203,10 @@ export interface RootRouteChildren {
   BecomeRoute: typeof BecomeRoute
   CartRoute: typeof CartRoute
   DashboardRoute: typeof DashboardRoute
+  ForgotPasswordRoute: typeof ForgotPasswordRoute
   GroceryRoute: typeof GroceryRoute
   MarketplaceRoute: typeof MarketplaceRoute
+  ResetPasswordRoute: typeof ResetPasswordRoute
   ServicesRoute: typeof ServicesRoute
   ServiceIdRoute: typeof ServiceIdRoute
   ShopSlugRoute: typeof ShopSlugRoute
@@ -195,6 +221,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ServicesRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/reset-password': {
+      id: '/reset-password'
+      path: '/reset-password'
+      fullPath: '/reset-password'
+      preLoaderRoute: typeof ResetPasswordRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/marketplace': {
       id: '/marketplace'
       path: '/marketplace'
@@ -207,6 +240,13 @@ declare module '@tanstack/react-router' {
       path: '/grocery'
       fullPath: '/grocery'
       preLoaderRoute: typeof GroceryRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/forgot-password': {
+      id: '/forgot-password'
+      path: '/forgot-password'
+      fullPath: '/forgot-password'
+      preLoaderRoute: typeof ForgotPasswordRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/dashboard': {
@@ -283,8 +323,10 @@ const rootRouteChildren: RootRouteChildren = {
   BecomeRoute: BecomeRoute,
   CartRoute: CartRoute,
   DashboardRoute: DashboardRoute,
+  ForgotPasswordRoute: ForgotPasswordRoute,
   GroceryRoute: GroceryRoute,
   MarketplaceRoute: MarketplaceRoute,
+  ResetPasswordRoute: ResetPasswordRoute,
   ServicesRoute: ServicesRoute,
   ServiceIdRoute: ServiceIdRoute,
   ShopSlugRoute: ShopSlugRoute,
