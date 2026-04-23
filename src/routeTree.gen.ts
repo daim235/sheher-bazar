@@ -13,11 +13,13 @@ import { Route as ServicesRouteImport } from './routes/services'
 import { Route as MarketplaceRouteImport } from './routes/marketplace'
 import { Route as GroceryRouteImport } from './routes/grocery'
 import { Route as DashboardRouteImport } from './routes/dashboard'
+import { Route as CartRouteImport } from './routes/cart'
 import { Route as BecomeRouteImport } from './routes/become'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AdminRouteImport } from './routes/admin'
 import { Route as AboutRouteImport } from './routes/about'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as ShopSlugRouteImport } from './routes/shop.$slug'
 import { Route as ServiceIdRouteImport } from './routes/service.$id'
 
 const ServicesRoute = ServicesRouteImport.update({
@@ -38,6 +40,11 @@ const GroceryRoute = GroceryRouteImport.update({
 const DashboardRoute = DashboardRouteImport.update({
   id: '/dashboard',
   path: '/dashboard',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CartRoute = CartRouteImport.update({
+  id: '/cart',
+  path: '/cart',
   getParentRoute: () => rootRouteImport,
 } as any)
 const BecomeRoute = BecomeRouteImport.update({
@@ -65,6 +72,11 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ShopSlugRoute = ShopSlugRouteImport.update({
+  id: '/shop/$slug',
+  path: '/shop/$slug',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ServiceIdRoute = ServiceIdRouteImport.update({
   id: '/service/$id',
   path: '/service/$id',
@@ -77,11 +89,13 @@ export interface FileRoutesByFullPath {
   '/admin': typeof AdminRoute
   '/auth': typeof AuthRoute
   '/become': typeof BecomeRoute
+  '/cart': typeof CartRoute
   '/dashboard': typeof DashboardRoute
   '/grocery': typeof GroceryRoute
   '/marketplace': typeof MarketplaceRoute
   '/services': typeof ServicesRoute
   '/service/$id': typeof ServiceIdRoute
+  '/shop/$slug': typeof ShopSlugRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -89,11 +103,13 @@ export interface FileRoutesByTo {
   '/admin': typeof AdminRoute
   '/auth': typeof AuthRoute
   '/become': typeof BecomeRoute
+  '/cart': typeof CartRoute
   '/dashboard': typeof DashboardRoute
   '/grocery': typeof GroceryRoute
   '/marketplace': typeof MarketplaceRoute
   '/services': typeof ServicesRoute
   '/service/$id': typeof ServiceIdRoute
+  '/shop/$slug': typeof ShopSlugRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -102,11 +118,13 @@ export interface FileRoutesById {
   '/admin': typeof AdminRoute
   '/auth': typeof AuthRoute
   '/become': typeof BecomeRoute
+  '/cart': typeof CartRoute
   '/dashboard': typeof DashboardRoute
   '/grocery': typeof GroceryRoute
   '/marketplace': typeof MarketplaceRoute
   '/services': typeof ServicesRoute
   '/service/$id': typeof ServiceIdRoute
+  '/shop/$slug': typeof ShopSlugRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -116,11 +134,13 @@ export interface FileRouteTypes {
     | '/admin'
     | '/auth'
     | '/become'
+    | '/cart'
     | '/dashboard'
     | '/grocery'
     | '/marketplace'
     | '/services'
     | '/service/$id'
+    | '/shop/$slug'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -128,11 +148,13 @@ export interface FileRouteTypes {
     | '/admin'
     | '/auth'
     | '/become'
+    | '/cart'
     | '/dashboard'
     | '/grocery'
     | '/marketplace'
     | '/services'
     | '/service/$id'
+    | '/shop/$slug'
   id:
     | '__root__'
     | '/'
@@ -140,11 +162,13 @@ export interface FileRouteTypes {
     | '/admin'
     | '/auth'
     | '/become'
+    | '/cart'
     | '/dashboard'
     | '/grocery'
     | '/marketplace'
     | '/services'
     | '/service/$id'
+    | '/shop/$slug'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -153,11 +177,13 @@ export interface RootRouteChildren {
   AdminRoute: typeof AdminRoute
   AuthRoute: typeof AuthRoute
   BecomeRoute: typeof BecomeRoute
+  CartRoute: typeof CartRoute
   DashboardRoute: typeof DashboardRoute
   GroceryRoute: typeof GroceryRoute
   MarketplaceRoute: typeof MarketplaceRoute
   ServicesRoute: typeof ServicesRoute
   ServiceIdRoute: typeof ServiceIdRoute
+  ShopSlugRoute: typeof ShopSlugRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -188,6 +214,13 @@ declare module '@tanstack/react-router' {
       path: '/dashboard'
       fullPath: '/dashboard'
       preLoaderRoute: typeof DashboardRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/cart': {
+      id: '/cart'
+      path: '/cart'
+      fullPath: '/cart'
+      preLoaderRoute: typeof CartRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/become': {
@@ -225,6 +258,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/shop/$slug': {
+      id: '/shop/$slug'
+      path: '/shop/$slug'
+      fullPath: '/shop/$slug'
+      preLoaderRoute: typeof ShopSlugRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/service/$id': {
       id: '/service/$id'
       path: '/service/$id'
@@ -241,11 +281,13 @@ const rootRouteChildren: RootRouteChildren = {
   AdminRoute: AdminRoute,
   AuthRoute: AuthRoute,
   BecomeRoute: BecomeRoute,
+  CartRoute: CartRoute,
   DashboardRoute: DashboardRoute,
   GroceryRoute: GroceryRoute,
   MarketplaceRoute: MarketplaceRoute,
   ServicesRoute: ServicesRoute,
   ServiceIdRoute: ServiceIdRoute,
+  ShopSlugRoute: ShopSlugRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
