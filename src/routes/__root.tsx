@@ -1,6 +1,7 @@
 import { Outlet, Link, createRootRoute, HeadContent, Scripts } from "@tanstack/react-router";
 import { I18nProvider } from "@/lib/i18n";
 import { AuthProvider } from "@/lib/auth";
+import { CartProvider } from "@/lib/cart";
 import { Toaster } from "@/components/ui/sonner";
 
 import appCss from "../styles.css?url";
@@ -65,8 +66,10 @@ function RootComponent() {
   return (
     <I18nProvider>
       <AuthProvider>
-        <Outlet />
-        <Toaster richColors position="top-right" />
+        <CartProvider>
+          <Outlet />
+          <Toaster richColors position="top-right" />
+        </CartProvider>
       </AuthProvider>
     </I18nProvider>
   );
