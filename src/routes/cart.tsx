@@ -14,6 +14,8 @@ import { useCart } from "@/lib/cart";
 import { useAuth } from "@/lib/auth";
 import { placeOrders } from "@/lib/api/orders";
 import { supabase } from "@/integrations/supabase/client";
+import { AddressPicker } from "@/components/AddressPicker";
+import type { Address } from "@/lib/api/addresses";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/cart")({
