@@ -147,6 +147,134 @@ export type Database = {
           },
         ]
       }
+      notifications: {
+        Row: {
+          body: string | null
+          created_at: string
+          id: string
+          link: string | null
+          metadata: Json | null
+          read: boolean
+          title: string
+          type: string
+          user_id: string
+        }
+        Insert: {
+          body?: string | null
+          created_at?: string
+          id?: string
+          link?: string | null
+          metadata?: Json | null
+          read?: boolean
+          title: string
+          type: string
+          user_id: string
+        }
+        Update: {
+          body?: string | null
+          created_at?: string
+          id?: string
+          link?: string | null
+          metadata?: Json | null
+          read?: boolean
+          title?: string
+          type?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      order_items: {
+        Row: {
+          created_at: string
+          id: string
+          order_id: string
+          product_id: string
+          product_name: string
+          quantity: number
+          unit_price: number
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          order_id: string
+          product_id: string
+          product_name: string
+          quantity: number
+          unit_price: number
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          order_id?: string
+          product_id?: string
+          product_name?: string
+          quantity?: number
+          unit_price?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "order_items_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: false
+            referencedRelation: "orders"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "order_items_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      orders: {
+        Row: {
+          created_at: string
+          customer_id: string
+          id: string
+          notes: string | null
+          phone: string | null
+          shipping_address: string | null
+          status: Database["public"]["Enums"]["order_status"]
+          total: number
+          updated_at: string
+          vendor_id: string
+        }
+        Insert: {
+          created_at?: string
+          customer_id: string
+          id?: string
+          notes?: string | null
+          phone?: string | null
+          shipping_address?: string | null
+          status?: Database["public"]["Enums"]["order_status"]
+          total?: number
+          updated_at?: string
+          vendor_id: string
+        }
+        Update: {
+          created_at?: string
+          customer_id?: string
+          id?: string
+          notes?: string | null
+          phone?: string | null
+          shipping_address?: string | null
+          status?: Database["public"]["Enums"]["order_status"]
+          total?: number
+          updated_at?: string
+          vendor_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "orders_vendor_id_fkey"
+            columns: ["vendor_id"]
+            isOneToOne: false
+            referencedRelation: "vendors"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       products: {
         Row: {
           category_id: string | null
@@ -216,6 +344,12 @@ export type Database = {
           full_name: string | null
           id: string
           phone: string | null
+          provider_applied_at: string | null
+          provider_rejection_reason: string | null
+          provider_reviewed_at: string | null
+          provider_reviewed_by: string | null
+          provider_skills: string | null
+          provider_status: Database["public"]["Enums"]["provider_status"]
           updated_at: string
         }
         Insert: {
@@ -226,6 +360,12 @@ export type Database = {
           full_name?: string | null
           id: string
           phone?: string | null
+          provider_applied_at?: string | null
+          provider_rejection_reason?: string | null
+          provider_reviewed_at?: string | null
+          provider_reviewed_by?: string | null
+          provider_skills?: string | null
+          provider_status?: Database["public"]["Enums"]["provider_status"]
           updated_at?: string
         }
         Update: {
@@ -236,6 +376,12 @@ export type Database = {
           full_name?: string | null
           id?: string
           phone?: string | null
+          provider_applied_at?: string | null
+          provider_rejection_reason?: string | null
+          provider_reviewed_at?: string | null
+          provider_reviewed_by?: string | null
+          provider_skills?: string | null
+          provider_status?: Database["public"]["Enums"]["provider_status"]
           updated_at?: string
         }
         Relationships: []
@@ -375,8 +521,12 @@ export type Database = {
           logo_url: string | null
           owner_id: string
           rating: number | null
+          rejection_reason: string | null
+          reviewed_at: string | null
+          reviewed_by: string | null
           shop_name: string
           slug: string
+          status: Database["public"]["Enums"]["approval_status"]
           updated_at: string
         }
         Insert: {
@@ -388,8 +538,12 @@ export type Database = {
           logo_url?: string | null
           owner_id: string
           rating?: number | null
+          rejection_reason?: string | null
+          reviewed_at?: string | null
+          reviewed_by?: string | null
           shop_name: string
           slug: string
+          status?: Database["public"]["Enums"]["approval_status"]
           updated_at?: string
         }
         Update: {
@@ -401,8 +555,12 @@ export type Database = {
           logo_url?: string | null
           owner_id?: string
           rating?: number | null
+          rejection_reason?: string | null
+          reviewed_at?: string | null
+          reviewed_by?: string | null
           shop_name?: string
           slug?: string
+          status?: Database["public"]["Enums"]["approval_status"]
           updated_at?: string
         }
         Relationships: []
@@ -412,6 +570,95 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      admin_set_provider_status: {
+        Args: {
+          _reason?: string
+          _status: Database["public"]["Enums"]["provider_status"]
+          _user_id: string
+        }
+        Returns: {
+          avatar_url: string | null
+          bio: string | null
+          city: string | null
+          created_at: string
+          full_name: string | null
+          id: string
+          phone: string | null
+          provider_applied_at: string | null
+          provider_rejection_reason: string | null
+          provider_reviewed_at: string | null
+          provider_reviewed_by: string | null
+          provider_skills: string | null
+          provider_status: Database["public"]["Enums"]["provider_status"]
+          updated_at: string
+        }
+        SetofOptions: {
+          from: "*"
+          to: "profiles"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
+      admin_set_vendor_status: {
+        Args: {
+          _reason?: string
+          _status: Database["public"]["Enums"]["approval_status"]
+          _vendor_id: string
+        }
+        Returns: {
+          banner_url: string | null
+          city: string | null
+          created_at: string
+          description: string | null
+          id: string
+          logo_url: string | null
+          owner_id: string
+          rating: number | null
+          rejection_reason: string | null
+          reviewed_at: string | null
+          reviewed_by: string | null
+          shop_name: string
+          slug: string
+          status: Database["public"]["Enums"]["approval_status"]
+          updated_at: string
+        }
+        SetofOptions: {
+          from: "*"
+          to: "vendors"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
+      apply_as_provider: {
+        Args: {
+          _bio?: string
+          _city?: string
+          _phone?: string
+          _skills: string
+        }
+        Returns: {
+          avatar_url: string | null
+          bio: string | null
+          city: string | null
+          created_at: string
+          full_name: string | null
+          id: string
+          phone: string | null
+          provider_applied_at: string | null
+          provider_rejection_reason: string | null
+          provider_reviewed_at: string | null
+          provider_reviewed_by: string | null
+          provider_skills: string | null
+          provider_status: Database["public"]["Enums"]["provider_status"]
+          updated_at: string
+        }
+        SetofOptions: {
+          from: "*"
+          to: "profiles"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
@@ -419,13 +666,30 @@ export type Database = {
         }
         Returns: boolean
       }
+      is_approved_provider: { Args: { _user_id: string }; Returns: boolean }
+      is_approved_vendor: { Args: { _vendor_id: string }; Returns: boolean }
       is_convo_participant: {
         Args: { _convo_id: string; _user_id: string }
         Returns: boolean
       }
+      is_order_vendor: {
+        Args: { _order_id: string; _user_id: string }
+        Returns: boolean
+      }
+      notify_admins: {
+        Args: {
+          _body: string
+          _link: string
+          _metadata: Json
+          _title: string
+          _type: string
+        }
+        Returns: undefined
+      }
     }
     Enums: {
       app_role: "customer" | "provider" | "vendor" | "admin"
+      approval_status: "pending" | "approved" | "rejected"
       booking_status:
         | "pending"
         | "confirmed"
@@ -433,6 +697,13 @@ export type Database = {
         | "completed"
         | "cancelled"
       listing_type: "service" | "product"
+      order_status:
+        | "pending"
+        | "confirmed"
+        | "shipped"
+        | "delivered"
+        | "cancelled"
+      provider_status: "none" | "pending" | "approved" | "rejected"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -561,6 +832,7 @@ export const Constants = {
   public: {
     Enums: {
       app_role: ["customer", "provider", "vendor", "admin"],
+      approval_status: ["pending", "approved", "rejected"],
       booking_status: [
         "pending",
         "confirmed",
@@ -569,6 +841,14 @@ export const Constants = {
         "cancelled",
       ],
       listing_type: ["service", "product"],
+      order_status: [
+        "pending",
+        "confirmed",
+        "shipped",
+        "delivered",
+        "cancelled",
+      ],
+      provider_status: ["none", "pending", "approved", "rejected"],
     },
   },
 } as const
