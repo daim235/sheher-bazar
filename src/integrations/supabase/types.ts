@@ -14,6 +14,45 @@ export type Database = {
   }
   public: {
     Tables: {
+      addresses: {
+        Row: {
+          address_line: string
+          city: string | null
+          created_at: string
+          full_name: string | null
+          id: string
+          is_default: boolean
+          label: string
+          phone: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          address_line: string
+          city?: string | null
+          created_at?: string
+          full_name?: string | null
+          id?: string
+          is_default?: boolean
+          label?: string
+          phone: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          address_line?: string
+          city?: string | null
+          created_at?: string
+          full_name?: string | null
+          id?: string
+          is_default?: boolean
+          label?: string
+          phone?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       bookings: {
         Row: {
           address: string | null
