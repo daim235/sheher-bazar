@@ -51,7 +51,7 @@ interface Service {
 }
 interface Conversation { id: string; user1_id: string; user2_id: string; last_message_at: string; }
 interface Message { id: string; conversation_id: string; sender_id: string; content: string; created_at: string; }
-interface Profile { id: string; full_name: string | null; phone: string | null; city: string | null; bio: string | null; }
+interface Profile { id: string; full_name: string | null; phone: string | null; city: string | null; bio: string | null; avatar_url: string | null; }
 interface Vendor {
   id: string; owner_id: string; shop_name: string; slug: string; description: string | null;
   city: string | null; logo_url: string | null; banner_url: string | null; status: string;
