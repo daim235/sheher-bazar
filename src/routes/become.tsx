@@ -180,13 +180,6 @@ function VendorApplicationCard({ userId }: { userId: string }) {
     }
     setSubmitting(false);
   };
-      toast.success("Application submitted! Admin will review shortly.");
-      await load();
-    } catch (e: any) {
-      toast.error(e.message ?? "Failed to apply");
-    }
-    setSubmitting(false);
-  };
 
   if (loading) {
     return (
