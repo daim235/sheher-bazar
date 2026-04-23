@@ -13,6 +13,7 @@ import { Route as ServicesRouteImport } from './routes/services'
 import { Route as MarketplaceRouteImport } from './routes/marketplace'
 import { Route as GroceryRouteImport } from './routes/grocery'
 import { Route as DashboardRouteImport } from './routes/dashboard'
+import { Route as BecomeRouteImport } from './routes/become'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AdminRouteImport } from './routes/admin'
 import { Route as AboutRouteImport } from './routes/about'
@@ -37,6 +38,11 @@ const GroceryRoute = GroceryRouteImport.update({
 const DashboardRoute = DashboardRouteImport.update({
   id: '/dashboard',
   path: '/dashboard',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const BecomeRoute = BecomeRouteImport.update({
+  id: '/become',
+  path: '/become',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AuthRoute = AuthRouteImport.update({
@@ -70,6 +76,7 @@ export interface FileRoutesByFullPath {
   '/about': typeof AboutRoute
   '/admin': typeof AdminRoute
   '/auth': typeof AuthRoute
+  '/become': typeof BecomeRoute
   '/dashboard': typeof DashboardRoute
   '/grocery': typeof GroceryRoute
   '/marketplace': typeof MarketplaceRoute
@@ -81,6 +88,7 @@ export interface FileRoutesByTo {
   '/about': typeof AboutRoute
   '/admin': typeof AdminRoute
   '/auth': typeof AuthRoute
+  '/become': typeof BecomeRoute
   '/dashboard': typeof DashboardRoute
   '/grocery': typeof GroceryRoute
   '/marketplace': typeof MarketplaceRoute
@@ -93,6 +101,7 @@ export interface FileRoutesById {
   '/about': typeof AboutRoute
   '/admin': typeof AdminRoute
   '/auth': typeof AuthRoute
+  '/become': typeof BecomeRoute
   '/dashboard': typeof DashboardRoute
   '/grocery': typeof GroceryRoute
   '/marketplace': typeof MarketplaceRoute
@@ -106,6 +115,7 @@ export interface FileRouteTypes {
     | '/about'
     | '/admin'
     | '/auth'
+    | '/become'
     | '/dashboard'
     | '/grocery'
     | '/marketplace'
@@ -117,6 +127,7 @@ export interface FileRouteTypes {
     | '/about'
     | '/admin'
     | '/auth'
+    | '/become'
     | '/dashboard'
     | '/grocery'
     | '/marketplace'
@@ -128,6 +139,7 @@ export interface FileRouteTypes {
     | '/about'
     | '/admin'
     | '/auth'
+    | '/become'
     | '/dashboard'
     | '/grocery'
     | '/marketplace'
@@ -140,6 +152,7 @@ export interface RootRouteChildren {
   AboutRoute: typeof AboutRoute
   AdminRoute: typeof AdminRoute
   AuthRoute: typeof AuthRoute
+  BecomeRoute: typeof BecomeRoute
   DashboardRoute: typeof DashboardRoute
   GroceryRoute: typeof GroceryRoute
   MarketplaceRoute: typeof MarketplaceRoute
@@ -175,6 +188,13 @@ declare module '@tanstack/react-router' {
       path: '/dashboard'
       fullPath: '/dashboard'
       preLoaderRoute: typeof DashboardRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/become': {
+      id: '/become'
+      path: '/become'
+      fullPath: '/become'
+      preLoaderRoute: typeof BecomeRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/auth': {
@@ -220,6 +240,7 @@ const rootRouteChildren: RootRouteChildren = {
   AboutRoute: AboutRoute,
   AdminRoute: AdminRoute,
   AuthRoute: AuthRoute,
+  BecomeRoute: BecomeRoute,
   DashboardRoute: DashboardRoute,
   GroceryRoute: GroceryRoute,
   MarketplaceRoute: MarketplaceRoute,
