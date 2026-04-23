@@ -7,6 +7,7 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { ReviewForm } from "@/components/ReviewForm";
+import { ContactShopButton } from "@/components/ContactShopButton";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/lib/auth";
 import { useCart } from "@/lib/cart";
@@ -28,7 +29,7 @@ interface Product {
   is_active: boolean;
 }
 interface Vendor {
-  id: string; shop_name: string; slug: string; city: string | null; logo_url: string | null;
+  id: string; owner_id: string; shop_name: string; slug: string; city: string | null; logo_url: string | null;
 }
 interface Review { id: string; rating: number; comment: string | null; created_at: string; author_id: string; }
 
@@ -58,7 +59,7 @@ function ProductDetail() {
       if (!p) { setLoading(false); return; }
       setProduct(p as Product);
       const [{ data: v }] = await Promise.all([
-        supabase.from("vendors").select("id, shop_name, slug, city, logo_url").eq("id", p.vendor_id).maybeSingle(),
+        supabase.from("vendors").select("id, owner_id, shop_name, slug, city, logo_url").eq("id", p.vendor_id).maybeSingle(),
         loadReviews(),
       ]);
       setVendor(v as Vendor | null);
@@ -153,24 +154,29 @@ function ProductDetail() {
               </Card>
             )}
 
-            <Button
-              size="lg"
-              disabled={outOfStock}
-              className="w-full bg-gradient-primary text-primary-foreground hover:opacity-95"
-              onClick={() => {
-                add({
-                  product_id: product.id,
-                  vendor_id: product.vendor_id,
-                  name: product.name,
-                  price: Number(product.price),
-                  quantity: 1,
-                });
-                toast.success(`${product.name} added to cart`);
-              }}
-            >
-              <ShoppingCart className="h-4 w-4 mr-2" />
-              {outOfStock ? "Out of stock" : "Add to cart"}
-            </Button>
+            <div className="flex flex-col sm:flex-row gap-2">
+              <Button
+                size="lg"
+                disabled={outOfStock}
+                className="flex-1 bg-gradient-primary text-primary-foreground hover:opacity-95"
+                onClick={() => {
+                  add({
+                    product_id: product.id,
+                    vendor_id: product.vendor_id,
+                    name: product.name,
+                    price: Number(product.price),
+                    quantity: 1,
+                  });
+                  toast.success(`${product.name} added to cart`);
+                }}
+              >
+                <ShoppingCart className="h-4 w-4 mr-2" />
+                {outOfStock ? "Out of stock" : "Add to cart"}
+              </Button>
+              {vendor && user?.id !== vendor.owner_id && (
+                <ContactShopButton otherUserId={vendor.owner_id} label="Message" />
+              )}
+            </div>
           </div>
         </div>
 
