@@ -169,6 +169,18 @@ function ServiceDetail() {
                   ))}
                 </div>
               )}
+
+              {!user ? (
+                <div className="border-t pt-4 mt-4 text-sm text-muted-foreground">
+                  <Link to="/auth" className="text-primary hover:underline">Sign in</Link> to leave a review.
+                </div>
+              ) : user.id === service.provider_id ? (
+                <div className="border-t pt-4 mt-4 text-sm text-muted-foreground">You can't review your own service.</div>
+              ) : reviews.some((r) => r.author_id === user.id) ? (
+                <div className="border-t pt-4 mt-4 text-sm text-muted-foreground">You've already reviewed this service.</div>
+              ) : (
+                <ReviewForm serviceId={service.id} authorId={user.id} onSubmitted={loadReviews} />
+              )}
             </Card>
           </div>
 
