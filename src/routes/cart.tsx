@@ -38,6 +38,14 @@ function CartPage() {
   const [placing, setPlacing] = useState(false);
   const [saveDefault, setSaveDefault] = useState(true);
   const [hasSavedAddress, setHasSavedAddress] = useState(false);
+  const [selectedAddressId, setSelectedAddressId] = useState<string | null>(null);
+
+  const handleSelectAddress = (a: Address) => {
+    setSelectedAddressId(a.id);
+    setAddress(a.address_line);
+    setPhone(a.phone);
+    setHasSavedAddress(true);
+  };
 
   // Pre-fill address + phone from the user's saved defaults.
   useEffect(() => {
