@@ -642,20 +642,33 @@ function VendorOrdersTab() {
   );
 }
 
-// =================== STATS ===================
+// =================== STATS / PAYOUTS ===================
 function StatsTab({ vendorId }: { vendorId: string }) {
   const [orders, setOrders] = useState<VendorOrder[]>([]);
   const [loading, setLoading] = useState(true);
+  const [commissionPct, setCommissionPct] = useState(0);
 
   useEffect(() => {
     (async () => {
       try {
-        const data = await getMyVendorOrders();
+        const [data, settings] = await Promise.all([
+          getMyVendorOrders(),
+          supabase.from("platform_settings").select("vendor_commission_pct").order("updated_at", { ascending: false }).limit(1).maybeSingle(),
+        ]);
         setOrders(data as unknown as VendorOrder[]);
+        setCommissionPct(Number(settings.data?.vendor_commission_pct ?? 0));
       } finally {
         setLoading(false);
       }
     })();
+    const channel = supabase
+      .channel("vendor-stats")
+      .on("postgres_changes", { event: "*", schema: "public", table: "orders" }, async () => {
+        const data = await getMyVendorOrders();
+        setOrders(data as unknown as VendorOrder[]);
+      })
+      .subscribe();
+    return () => { supabase.removeChannel(channel); };
   }, [vendorId]);
 
   const stats = useMemo(() => {
@@ -668,8 +681,19 @@ function StatsTab({ vendorId }: { vendorId: string }) {
       productCount.set(it.product_name, (productCount.get(it.product_name) ?? 0) + it.quantity);
     }));
     const topProducts = Array.from(productCount.entries()).sort((a, b) => b[1] - a[1]).slice(0, 5);
-    return { revenue, completed: completed.length, pending, totalItems, total: orders.length, topProducts };
-  }, [orders]);
+
+    // Payout calculation
+    const commission = (revenue * commissionPct) / 100;
+    const netPayout = revenue - commission;
+
+    // Pending payout = delivered orders only (COD collected on delivery)
+    const pendingPayout = netPayout; // assumes no payout settlement tracking yet
+    return {
+      revenue, completed: completed.length, pending, totalItems,
+      total: orders.length, topProducts,
+      commission, netPayout, pendingPayout,
+    };
+  }, [orders, commissionPct]);
 
   if (loading) return <Loader2 className="h-6 w-6 animate-spin text-primary mx-auto mt-10" />;
 
@@ -677,7 +701,7 @@ function StatsTab({ vendorId }: { vendorId: string }) {
     <div className="space-y-4">
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
         <Card className="p-4">
-          <div className="text-xs text-muted-foreground">Total revenue</div>
+          <div className="text-xs text-muted-foreground">Gross revenue</div>
           <div className="text-2xl font-bold text-primary mt-1">Rs {stats.revenue.toLocaleString()}</div>
           <div className="text-xs text-muted-foreground mt-1">From delivered orders</div>
         </Card>
@@ -695,6 +719,32 @@ function StatsTab({ vendorId }: { vendorId: string }) {
           <div className="text-2xl font-bold mt-1">{stats.totalItems}</div>
         </Card>
       </div>
+
+      {/* Payout / commission breakdown */}
+      <Card className="p-5 bg-gradient-card">
+        <div className="flex items-center justify-between flex-wrap gap-2 mb-4">
+          <h3 className="font-semibold">Payout summary</h3>
+          <Badge variant="outline">Commission rate: {commissionPct}%</Badge>
+        </div>
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+          <div>
+            <div className="text-xs text-muted-foreground">Gross sales</div>
+            <div className="text-xl font-bold">Rs {stats.revenue.toLocaleString()}</div>
+          </div>
+          <div>
+            <div className="text-xs text-muted-foreground">Platform commission</div>
+            <div className="text-xl font-bold text-accent-orange">- Rs {stats.commission.toLocaleString()}</div>
+          </div>
+          <div>
+            <div className="text-xs text-muted-foreground">Net payout</div>
+            <div className="text-xl font-bold text-primary">Rs {stats.netPayout.toLocaleString()}</div>
+          </div>
+        </div>
+        <p className="mt-3 text-xs text-muted-foreground">
+          Cash on delivery: vendors collect payment directly from customers.
+          Platform commission of {commissionPct}% is owed to Shahar Bazar on each delivered order.
+        </p>
+      </Card>
 
       <Card className="p-5">
         <h3 className="font-semibold mb-3">Top products</h3>
