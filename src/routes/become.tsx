@@ -132,22 +132,6 @@ function VendorApplicationCard({ userId }: { userId: string }) {
     }
     setLoading(false);
   };
-    setLoading(true);
-    try {
-      const v = await getMyVendor();
-      setExisting(v);
-      if (v) {
-        setShopName(v.shop_name ?? "");
-        setSlug(v.slug ?? "");
-        setCity(v.city ?? "Sargodha");
-        setDescription(v.description ?? "");
-        setLogoUrl(v.logo_url ?? "");
-      }
-    } catch (e: any) {
-      toast.error(e.message ?? "Failed to load");
-    }
-    setLoading(false);
-  };
 
   useEffect(() => {
     load();
