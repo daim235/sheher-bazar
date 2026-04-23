@@ -72,7 +72,7 @@ function Dashboard() {
       </div>
 
       <div className="mx-auto max-w-6xl px-6 -mt-6 pb-12">
-        <Tabs value={search.tab} onValueChange={(v) => navigate({ to: "/dashboard", search: (p) => ({ ...p, tab: v as any }) })}>
+        <Tabs value={search.tab} onValueChange={(v) => navigate({ to: "/dashboard", search: (p: { tab: string; c: string }) => ({ ...p, tab: v as any }) })}>
           <TabsList className="bg-card shadow-soft">
             <TabsTrigger value="bookings">{t("dash.bookings")}</TabsTrigger>
             <TabsTrigger value="listings">{t("dash.listings")}</TabsTrigger>

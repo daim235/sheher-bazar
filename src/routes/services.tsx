@@ -102,7 +102,7 @@ function ServicesPage() {
           <Button
             variant={!search.category ? "default" : "outline"}
             size="sm"
-            onClick={() => navigate({ to: "/services", search: (p) => ({ ...p, category: "" }) })}
+            onClick={() => navigate({ to: "/services", search: (p: { q: string; city: string; category: string }) => ({ ...p, category: "" }) })}
           >
             {t("filter.allCategories")}
           </Button>
@@ -111,7 +111,7 @@ function ServicesPage() {
               key={c.id}
               variant={search.category === c.slug ? "default" : "outline"}
               size="sm"
-              onClick={() => navigate({ to: "/services", search: (p) => ({ ...p, category: c.slug }) })}
+              onClick={() => navigate({ to: "/services", search: (p: { q: string; city: string; category: string }) => ({ ...p, category: c.slug }) })}
               className="whitespace-nowrap"
             >
               {lang === "ur" ? c.name_ur ?? c.name : c.name}

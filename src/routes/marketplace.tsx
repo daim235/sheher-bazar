@@ -81,7 +81,7 @@ function MarketplacePage() {
               <Search className="h-4 w-4 text-muted-foreground" />
               <Input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Search products…" className="border-0 shadow-none focus-visible:ring-0 px-0 bg-transparent text-foreground" />
             </div>
-            <Button size="lg" variant="secondary" onClick={() => navigate({ to: "/marketplace", search: (p) => ({ ...p, q }) })}>
+            <Button size="lg" variant="secondary" onClick={() => navigate({ to: "/marketplace", search: (p: { q: string; category: string }) => ({ ...p, q }) })}>
               {t("hero.search.btn")}
             </Button>
           </div>
@@ -94,7 +94,7 @@ function MarketplacePage() {
           <Button
             variant={!search.category ? "default" : "outline"}
             size="sm"
-            onClick={() => navigate({ to: "/marketplace", search: (p) => ({ ...p, category: "" }) })}
+            onClick={() => navigate({ to: "/marketplace", search: (p: { q: string; category: string }) => ({ ...p, category: "" }) })}
           >
             {t("filter.allCategories")}
           </Button>
@@ -103,7 +103,7 @@ function MarketplacePage() {
               key={c.id}
               variant={search.category === c.slug ? "default" : "outline"}
               size="sm"
-              onClick={() => navigate({ to: "/marketplace", search: (p) => ({ ...p, category: c.slug }) })}
+              onClick={() => navigate({ to: "/marketplace", search: (p: { q: string; category: string }) => ({ ...p, category: c.slug }) })}
               className="whitespace-nowrap"
             >
               {lang === "ur" ? c.name_ur ?? c.name : c.name}
