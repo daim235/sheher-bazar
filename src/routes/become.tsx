@@ -112,8 +112,26 @@ function VendorApplicationCard({ userId }: { userId: string }) {
   const [city, setCity] = useState("Sargodha");
   const [description, setDescription] = useState("");
   const [logoUrl, setLogoUrl] = useState("");
+  const [contactEmail, setContactEmail] = useState("");
 
   const load = async () => {
+    setLoading(true);
+    try {
+      const v = await getMyVendor();
+      setExisting(v);
+      if (v) {
+        setShopName(v.shop_name ?? "");
+        setSlug(v.slug ?? "");
+        setCity(v.city ?? "Sargodha");
+        setDescription(v.description ?? "");
+        setLogoUrl(v.logo_url ?? "");
+        setContactEmail(v.contact_email ?? "");
+      }
+    } catch (e: any) {
+      toast.error(e.message ?? "Failed to load");
+    }
+    setLoading(false);
+  };
     setLoading(true);
     try {
       const v = await getMyVendor();
@@ -141,6 +159,10 @@ function VendorApplicationCard({ userId }: { userId: string }) {
       toast.error("Shop name is required");
       return;
     }
+    if (!contactEmail.trim() || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(contactEmail.trim())) {
+      toast.error("Please enter a valid contact email (Gmail)");
+      return;
+    }
     setSubmitting(true);
     try {
       await applyAsVendor({
@@ -149,7 +171,15 @@ function VendorApplicationCard({ userId }: { userId: string }) {
         city: city.trim() || undefined,
         description: description.trim() || undefined,
         logo_url: logoUrl.trim() || undefined,
+        contact_email: contactEmail.trim(),
       });
+      toast.success("Application submitted! Admin will review shortly.");
+      await load();
+    } catch (e: any) {
+      toast.error(e.message ?? "Failed to apply");
+    }
+    setSubmitting(false);
+  };
       toast.success("Application submitted! Admin will review shortly.");
       await load();
     } catch (e: any) {
