@@ -1,7 +1,7 @@
 // Cart + Cash-on-Delivery checkout
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { useState } from "react";
-import { ShoppingCart, Trash2, Loader2, ArrowLeft, Minus, Plus } from "lucide-react";
+import { useEffect, useState } from "react";
+import { ShoppingCart, Trash2, Loader2, ArrowLeft, Minus, Plus, BookmarkCheck } from "lucide-react";
 import { SiteShell } from "@/components/SiteShell";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -9,9 +9,11 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Separator } from "@/components/ui/separator";
+import { Checkbox } from "@/components/ui/checkbox";
 import { useCart } from "@/lib/cart";
 import { useAuth } from "@/lib/auth";
 import { placeOrders } from "@/lib/api/orders";
+import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/cart")({
@@ -32,6 +34,28 @@ function CartPage() {
   const [phone, setPhone] = useState("");
   const [notes, setNotes] = useState("");
   const [placing, setPlacing] = useState(false);
+  const [saveDefault, setSaveDefault] = useState(true);
+  const [hasSavedAddress, setHasSavedAddress] = useState(false);
+
+  // Pre-fill address + phone from the user's saved defaults.
+  useEffect(() => {
+    if (!user) return;
+    supabase
+      .from("profiles")
+      .select("default_address, default_phone")
+      .eq("id", user.id)
+      .maybeSingle()
+      .then(({ data }) => {
+        if (!data) return;
+        if (data.default_address) {
+          setAddress((cur) => cur || data.default_address || "");
+          setHasSavedAddress(true);
+        }
+        if (data.default_phone) {
+          setPhone((cur) => cur || data.default_phone || "");
+        }
+      });
+  }, [user]);
 
   const handlePlace = async () => {
     if (!user) {
