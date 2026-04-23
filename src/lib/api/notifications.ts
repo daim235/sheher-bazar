@@ -45,7 +45,7 @@ export async function markAllNotificationsRead() {
 /** Subscribe to realtime new-notification inserts for the current user. */
 export function subscribeToMyNotifications(userId: string, onInsert: (n: AppNotification) => void) {
   const channel = supabase
-    .channel(`notifications-${userId}`)
+    .channel(`notifications-${userId}-${Math.random().toString(36).slice(2, 10)}`)
     .on(
       "postgres_changes",
       { event: "INSERT", schema: "public", table: "notifications", filter: `user_id=eq.${userId}` },
