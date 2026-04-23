@@ -92,6 +92,21 @@ export function Footer() {
                   {t("nav.about")}
                 </Link>
               </li>
+              <li>
+                <Link to="/terms" className="hover:text-accent-orange transition-base">
+                  Terms of Service
+                </Link>
+              </li>
+              <li>
+                <Link to="/privacy" className="hover:text-accent-orange transition-base">
+                  Privacy Policy
+                </Link>
+              </li>
+              <li>
+                <Link to="/refund" className="hover:text-accent-orange transition-base">
+                  Refund Policy
+                </Link>
+              </li>
             </ul>
           </div>
 
