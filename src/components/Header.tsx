@@ -1,5 +1,5 @@
 import { Link, useNavigate } from "@tanstack/react-router";
-import { Menu, Globe, LogOut, LayoutDashboard, ShoppingCart } from "lucide-react";
+import { Menu, Globe, LogOut, LayoutDashboard, ShoppingCart, ShieldCheck } from "lucide-react";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
@@ -11,11 +11,13 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { useI18n } from "@/lib/i18n";
 import { useAuth } from "@/lib/auth";
+import { useIsAdmin } from "@/lib/useIsAdmin";
 import logo from "@/assets/logo-shahar-bazar.png";
 
 export function Header() {
   const { t, lang, setLang } = useI18n();
   const { user, signOut } = useAuth();
+  const { isAdmin } = useIsAdmin();
   const navigate = useNavigate();
   const [open, setOpen] = useState(false);
 
@@ -83,6 +85,11 @@ export function Header() {
                 <DropdownMenuItem onSelect={() => navigate({ to: "/dashboard" })}>
                   <LayoutDashboard className="h-4 w-4 mr-2" /> {t("nav.dashboard")}
                 </DropdownMenuItem>
+                {isAdmin && (
+                  <DropdownMenuItem onSelect={() => navigate({ to: "/admin" })}>
+                    <ShieldCheck className="h-4 w-4 mr-2" /> Admin Portal
+                  </DropdownMenuItem>
+                )}
                 <DropdownMenuSeparator />
                 <DropdownMenuItem onSelect={() => signOut()}>
                   <LogOut className="h-4 w-4 mr-2" /> {t("nav.signout")}
