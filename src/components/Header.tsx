@@ -1,5 +1,5 @@
 import { Link, useNavigate } from "@tanstack/react-router";
-import { Menu, Globe, LogOut, LayoutDashboard, ShoppingCart, ShieldCheck } from "lucide-react";
+import { Menu, Globe, LogOut, LayoutDashboard, ShoppingCart, ShieldCheck, Store } from "lucide-react";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
@@ -84,6 +84,9 @@ export function Header() {
               <DropdownMenuContent align="end" className="w-52">
                 <DropdownMenuItem onSelect={() => navigate({ to: "/dashboard" })}>
                   <LayoutDashboard className="h-4 w-4 mr-2" /> {t("nav.dashboard")}
+                </DropdownMenuItem>
+                <DropdownMenuItem onSelect={() => navigate({ to: "/become" })}>
+                  <Store className="h-4 w-4 mr-2" /> Become a vendor
                 </DropdownMenuItem>
                 {isAdmin && (
                   <DropdownMenuItem onSelect={() => navigate({ to: "/admin" })}>

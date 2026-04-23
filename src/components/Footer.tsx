@@ -32,7 +32,7 @@ export function Footer() {
             size="lg"
             className="mt-6 bg-gradient-orange hover:opacity-95 text-accent-orange-foreground rounded-full px-10 py-6 text-base font-semibold shadow-elegant"
           >
-            <Link to="/auth">{t("common.register")}</Link>
+            <Link to="/become">{t("common.register")}</Link>
           </Button>
         </div>
       </section>
