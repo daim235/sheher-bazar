@@ -369,6 +369,10 @@ function ProviderApplicationCard({ userId }: { userId: string }) {
       toast.error("Please describe your skills");
       return;
     }
+    if (!email.trim() || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim())) {
+      toast.error("Please enter a valid contact email (Gmail)");
+      return;
+    }
     setSubmitting(true);
     try {
       await applyAsProvider({
@@ -376,6 +380,7 @@ function ProviderApplicationCard({ userId }: { userId: string }) {
         bio: bio.trim() || undefined,
         phone: phone.trim() || undefined,
         city: city.trim() || undefined,
+        email: email.trim(),
       });
       toast.success("Application submitted! Admin will review shortly.");
       await load();
