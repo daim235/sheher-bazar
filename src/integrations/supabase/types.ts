@@ -603,7 +603,40 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      public_profiles: {
+        Row: {
+          avatar_url: string | null
+          bio: string | null
+          city: string | null
+          full_name: string | null
+          id: string | null
+          provider_skills: string | null
+          provider_status: Database["public"]["Enums"]["provider_status"] | null
+        }
+        Insert: {
+          avatar_url?: string | null
+          bio?: string | null
+          city?: string | null
+          full_name?: string | null
+          id?: string | null
+          provider_skills?: string | null
+          provider_status?:
+            | Database["public"]["Enums"]["provider_status"]
+            | null
+        }
+        Update: {
+          avatar_url?: string | null
+          bio?: string | null
+          city?: string | null
+          full_name?: string | null
+          id?: string | null
+          provider_skills?: string | null
+          provider_status?:
+            | Database["public"]["Enums"]["provider_status"]
+            | null
+        }
+        Relationships: []
+      }
     }
     Functions: {
       admin_set_provider_status: {
