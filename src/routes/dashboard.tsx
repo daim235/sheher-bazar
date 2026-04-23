@@ -370,9 +370,26 @@ function ShopTab({ vendor, onUpdate }: { vendor: Vendor; onUpdate: (v: Vendor) =
         <div><Label>Contact email</Label><Input type="email" value={form.contact_email ?? ""} onChange={(e) => setForm({ ...form, contact_email: e.target.value })} /></div>
         <div><Label>City</Label><Input value={form.city ?? ""} onChange={(e) => setForm({ ...form, city: e.target.value })} /></div>
         <div><Label>Description</Label><Textarea rows={4} value={form.description ?? ""} onChange={(e) => setForm({ ...form, description: e.target.value })} /></div>
-        <div className="grid sm:grid-cols-2 gap-3">
-          <div><Label>Logo URL</Label><Input value={form.logo_url ?? ""} onChange={(e) => setForm({ ...form, logo_url: e.target.value })} placeholder="https://…" /></div>
-          <div><Label>Banner URL</Label><Input value={form.banner_url ?? ""} onChange={(e) => setForm({ ...form, banner_url: e.target.value })} placeholder="https://…" /></div>
+        <div className="grid sm:grid-cols-2 gap-4 pt-2">
+          <ImageUploader
+            userId={vendor.owner_id}
+            label="Shop logo"
+            hint="Square works best"
+            shape="circle"
+            folder="logo"
+            value={form.logo_url}
+            onChange={(url) => setForm({ ...form, logo_url: url || null })}
+          />
+          <ImageUploader
+            userId={vendor.owner_id}
+            label="Shop banner"
+            hint="Wide image for the top of your shop page"
+            shape="rect"
+            aspectClassName="aspect-[3/1]"
+            folder="banner"
+            value={form.banner_url}
+            onChange={(url) => setForm({ ...form, banner_url: url || null })}
+          />
         </div>
         <Button type="submit" disabled={saving} className="bg-gradient-primary text-primary-foreground">
           {saving && <Loader2 className="h-4 w-4 mr-2 animate-spin" />} Save shop
