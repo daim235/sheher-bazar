@@ -53,9 +53,9 @@ export interface ProviderApplicationInput {
 export async function applyAsProvider(input: ProviderApplicationInput) {
   const { data, error } = await supabase.rpc("apply_as_provider", {
     _skills: input.skills,
-    _bio: input.bio ?? null,
-    _phone: input.phone ?? null,
-    _city: input.city ?? null,
+    _bio: input.bio ?? undefined,
+    _phone: input.phone ?? undefined,
+    _city: input.city ?? undefined,
   });
   if (error) throw error;
   return data;
@@ -66,7 +66,7 @@ export async function adminSetVendorStatus(vendorId: string, status: ApprovalSta
   const { data, error } = await supabase.rpc("admin_set_vendor_status", {
     _vendor_id: vendorId,
     _status: status,
-    _reason: reason ?? null,
+    _reason: reason ?? undefined,
   });
   if (error) throw error;
   return data;
@@ -76,7 +76,7 @@ export async function adminSetProviderStatus(userId: string, status: ProviderSta
   const { data, error } = await supabase.rpc("admin_set_provider_status", {
     _user_id: userId,
     _status: status,
-    _reason: reason ?? null,
+    _reason: reason ?? undefined,
   });
   if (error) throw error;
   return data;
