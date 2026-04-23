@@ -899,7 +899,9 @@ function StatsTab({ vendorId }: { vendorId: string }) {
         </Card>
       </div>
 
-      {/* Payout / commission breakdown */}
+      <SalesChart orders={orders} days={30} />
+
+
       <Card className="p-5 bg-gradient-card">
         <div className="flex items-center justify-between flex-wrap gap-2 mb-4">
           <h3 className="font-semibold">Payout summary</h3>
