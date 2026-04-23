@@ -112,6 +112,7 @@ function VendorApplicationCard({ userId }: { userId: string }) {
   const [city, setCity] = useState("Sargodha");
   const [description, setDescription] = useState("");
   const [logoUrl, setLogoUrl] = useState("");
+  const [contactEmail, setContactEmail] = useState("");
 
   const load = async () => {
     setLoading(true);
@@ -124,6 +125,7 @@ function VendorApplicationCard({ userId }: { userId: string }) {
         setCity(v.city ?? "Sargodha");
         setDescription(v.description ?? "");
         setLogoUrl(v.logo_url ?? "");
+        setContactEmail(v.contact_email ?? "");
       }
     } catch (e: any) {
       toast.error(e.message ?? "Failed to load");
@@ -141,6 +143,10 @@ function VendorApplicationCard({ userId }: { userId: string }) {
       toast.error("Shop name is required");
       return;
     }
+    if (!contactEmail.trim() || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(contactEmail.trim())) {
+      toast.error("Please enter a valid contact email (Gmail)");
+      return;
+    }
     setSubmitting(true);
     try {
       await applyAsVendor({
@@ -149,6 +155,7 @@ function VendorApplicationCard({ userId }: { userId: string }) {
         city: city.trim() || undefined,
         description: description.trim() || undefined,
         logo_url: logoUrl.trim() || undefined,
+        contact_email: contactEmail.trim(),
       });
       toast.success("Application submitted! Admin will review shortly.");
       await load();
@@ -283,6 +290,21 @@ function VendorApplicationCard({ userId }: { userId: string }) {
         </div>
 
         <div>
+          <Label htmlFor="vendor_email">Contact email (Gmail) *</Label>
+          <Input
+            id="vendor_email"
+            type="email"
+            value={contactEmail}
+            onChange={(e) => setContactEmail(e.target.value)}
+            placeholder="yourshop@gmail.com"
+            required
+          />
+          <p className="text-xs text-muted-foreground mt-1">
+            We'll use this email to reach you about your shop.
+          </p>
+        </div>
+
+        <div>
           <Label htmlFor="desc">Description</Label>
           <Textarea
             id="desc"
@@ -316,6 +338,7 @@ function ProviderApplicationCard({ userId }: { userId: string }) {
   const [bio, setBio] = useState("");
   const [phone, setPhone] = useState("");
   const [city, setCity] = useState("Sargodha");
+  const [email, setEmail] = useState("");
 
   const load = async () => {
     setLoading(true);
@@ -331,6 +354,7 @@ function ProviderApplicationCard({ userId }: { userId: string }) {
       setBio(data.bio ?? "");
       setPhone(data.phone ?? "");
       setCity(data.city ?? "Sargodha");
+      setEmail(data.contact_email ?? "");
     }
     setLoading(false);
   };
@@ -345,6 +369,10 @@ function ProviderApplicationCard({ userId }: { userId: string }) {
       toast.error("Please describe your skills");
       return;
     }
+    if (!email.trim() || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim())) {
+      toast.error("Please enter a valid contact email (Gmail)");
+      return;
+    }
     setSubmitting(true);
     try {
       await applyAsProvider({
@@ -352,6 +380,7 @@ function ProviderApplicationCard({ userId }: { userId: string }) {
         bio: bio.trim() || undefined,
         phone: phone.trim() || undefined,
         city: city.trim() || undefined,
+        email: email.trim(),
       });
       toast.success("Application submitted! Admin will review shortly.");
       await load();
@@ -420,6 +449,21 @@ function ProviderApplicationCard({ userId }: { userId: string }) {
             placeholder="e.g. Plumbing, Electrical work, AC repair"
             required
           />
+        </div>
+
+        <div>
+          <Label htmlFor="provider_email">Contact email (Gmail) *</Label>
+          <Input
+            id="provider_email"
+            type="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            placeholder="yourname@gmail.com"
+            required
+          />
+          <p className="text-xs text-muted-foreground mt-1">
+            We'll use this email to contact you about your application.
+          </p>
         </div>
 
         <div className="grid sm:grid-cols-2 gap-3">

@@ -340,6 +340,7 @@ export type Database = {
           avatar_url: string | null
           bio: string | null
           city: string | null
+          contact_email: string | null
           created_at: string
           full_name: string | null
           id: string
@@ -356,6 +357,7 @@ export type Database = {
           avatar_url?: string | null
           bio?: string | null
           city?: string | null
+          contact_email?: string | null
           created_at?: string
           full_name?: string | null
           id: string
@@ -372,6 +374,7 @@ export type Database = {
           avatar_url?: string | null
           bio?: string | null
           city?: string | null
+          contact_email?: string | null
           created_at?: string
           full_name?: string | null
           id?: string
@@ -515,6 +518,7 @@ export type Database = {
         Row: {
           banner_url: string | null
           city: string | null
+          contact_email: string | null
           created_at: string
           description: string | null
           id: string
@@ -532,6 +536,7 @@ export type Database = {
         Insert: {
           banner_url?: string | null
           city?: string | null
+          contact_email?: string | null
           created_at?: string
           description?: string | null
           id?: string
@@ -549,6 +554,7 @@ export type Database = {
         Update: {
           banner_url?: string | null
           city?: string | null
+          contact_email?: string | null
           created_at?: string
           description?: string | null
           id?: string
@@ -580,6 +586,7 @@ export type Database = {
           avatar_url: string | null
           bio: string | null
           city: string | null
+          contact_email: string | null
           created_at: string
           full_name: string | null
           id: string
@@ -608,6 +615,7 @@ export type Database = {
         Returns: {
           banner_url: string | null
           city: string | null
+          contact_email: string | null
           created_at: string
           description: string | null
           id: string
@@ -629,36 +637,70 @@ export type Database = {
           isSetofReturn: false
         }
       }
-      apply_as_provider: {
-        Args: {
-          _bio?: string
-          _city?: string
-          _phone?: string
-          _skills: string
-        }
-        Returns: {
-          avatar_url: string | null
-          bio: string | null
-          city: string | null
-          created_at: string
-          full_name: string | null
-          id: string
-          phone: string | null
-          provider_applied_at: string | null
-          provider_rejection_reason: string | null
-          provider_reviewed_at: string | null
-          provider_reviewed_by: string | null
-          provider_skills: string | null
-          provider_status: Database["public"]["Enums"]["provider_status"]
-          updated_at: string
-        }
-        SetofOptions: {
-          from: "*"
-          to: "profiles"
-          isOneToOne: true
-          isSetofReturn: false
-        }
-      }
+      apply_as_provider:
+        | {
+            Args: {
+              _bio?: string
+              _city?: string
+              _phone?: string
+              _skills: string
+            }
+            Returns: {
+              avatar_url: string | null
+              bio: string | null
+              city: string | null
+              contact_email: string | null
+              created_at: string
+              full_name: string | null
+              id: string
+              phone: string | null
+              provider_applied_at: string | null
+              provider_rejection_reason: string | null
+              provider_reviewed_at: string | null
+              provider_reviewed_by: string | null
+              provider_skills: string | null
+              provider_status: Database["public"]["Enums"]["provider_status"]
+              updated_at: string
+            }
+            SetofOptions: {
+              from: "*"
+              to: "profiles"
+              isOneToOne: true
+              isSetofReturn: false
+            }
+          }
+        | {
+            Args: {
+              _bio?: string
+              _city?: string
+              _email?: string
+              _phone?: string
+              _skills: string
+            }
+            Returns: {
+              avatar_url: string | null
+              bio: string | null
+              city: string | null
+              contact_email: string | null
+              created_at: string
+              full_name: string | null
+              id: string
+              phone: string | null
+              provider_applied_at: string | null
+              provider_rejection_reason: string | null
+              provider_reviewed_at: string | null
+              provider_reviewed_by: string | null
+              provider_skills: string | null
+              provider_status: Database["public"]["Enums"]["provider_status"]
+              updated_at: string
+            }
+            SetofOptions: {
+              from: "*"
+              to: "profiles"
+              isOneToOne: true
+              isSetofReturn: false
+            }
+          }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
