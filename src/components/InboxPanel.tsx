@@ -58,8 +58,9 @@ export function InboxPanel({ userId, initialConvo }: { userId: string; initialCo
 
   // Subscribe to ALL message inserts for this user's conversations to keep unread + previews fresh.
   useEffect(() => {
-    const channel = supabase
-      .channel(`inbox-${userId}`)
+    const channelName = `inbox-${userId}-${Math.random().toString(36).slice(2, 10)}`;
+    const channel = supabase.channel(channelName);
+    channel
       .on("postgres_changes", { event: "INSERT", schema: "public", table: "messages" }, (payload) => {
         const m = payload.new as Message;
         // Only react if it belongs to a conversation this user is in (re-fetch convos for accuracy)
