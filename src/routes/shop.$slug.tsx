@@ -6,7 +6,9 @@ import { SiteShell } from "@/components/SiteShell";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { ContactShopButton } from "@/components/ContactShopButton";
 import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/lib/auth";
 import { useCart } from "@/lib/cart";
 import { toast } from "sonner";
 
@@ -16,6 +18,7 @@ export const Route = createFileRoute("/shop/$slug")({
 
 interface Vendor {
   id: string;
+  owner_id: string;
   shop_name: string;
   slug: string;
   description: string | null;
@@ -39,6 +42,7 @@ interface Product {
 function ShopPage() {
   const { slug } = Route.useParams();
   const navigate = useNavigate();
+  const { user } = useAuth();
   const { add } = useCart();
   const [vendor, setVendor] = useState<Vendor | null>(null);
   const [products, setProducts] = useState<Product[]>([]);
@@ -129,6 +133,11 @@ function ShopPage() {
             </div>
             {vendor.description && (
               <p className="mt-3 text-sm text-foreground/80">{vendor.description}</p>
+            )}
+            {user?.id !== vendor.owner_id && (
+              <div className="mt-4">
+                <ContactShopButton otherUserId={vendor.owner_id} label="Message shop owner" />
+              </div>
             )}
           </div>
         </Card>

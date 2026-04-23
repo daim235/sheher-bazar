@@ -51,7 +51,7 @@ interface Service {
 }
 interface Conversation { id: string; user1_id: string; user2_id: string; last_message_at: string; }
 interface Message { id: string; conversation_id: string; sender_id: string; content: string; created_at: string; }
-interface Profile { id: string; full_name: string | null; phone: string | null; city: string | null; bio: string | null; avatar_url: string | null; }
+interface Profile { id: string; full_name: string | null; phone: string | null; city: string | null; bio: string | null; avatar_url: string | null; default_address: string | null; default_phone: string | null; }
 interface Vendor {
   id: string; owner_id: string; shop_name: string; slug: string; description: string | null;
   city: string | null; logo_url: string | null; banner_url: string | null; status: string;
@@ -106,7 +106,7 @@ function Dashboard() {
       </div>
 
       <div className="mx-auto max-w-6xl px-6 -mt-6 pb-12">
-        <Tabs value={search.tab} onValueChange={(v) => navigate({ to: "/dashboard", search: (p) => ({ ...p, tab: v as typeof search.tab }) })}>
+        <Tabs value={search.tab} onValueChange={(v) => navigate({ to: "/dashboard", search: (p: { tab: typeof search.tab; c: string }) => ({ ...p, tab: v as typeof search.tab }) })}>
           <TabsList className="bg-card shadow-soft flex-wrap h-auto">
             <TabsTrigger value="bookings">{t("dash.bookings")}</TabsTrigger>
             <TabsTrigger value="my-orders"><Receipt className="h-3.5 w-3.5 mr-1" /> My orders</TabsTrigger>
@@ -857,6 +857,8 @@ function ProfileTab({ userId }: { userId: string }) {
     const { error } = await supabase.from("profiles").update({
       full_name: profile.full_name, phone: profile.phone, city: profile.city, bio: profile.bio,
       avatar_url: profile.avatar_url,
+      default_address: profile.default_address,
+      default_phone: profile.default_phone,
     }).eq("id", userId);
     setSaving(false);
     if (error) toast.error(error.message); else toast.success("Profile saved");
@@ -880,6 +882,31 @@ function ProfileTab({ userId }: { userId: string }) {
         <div><Label>Phone</Label><Input value={profile.phone ?? ""} onChange={(e) => setProfile({ ...profile, phone: e.target.value })} /></div>
         <div><Label>City</Label><Input value={profile.city ?? ""} onChange={(e) => setProfile({ ...profile, city: e.target.value })} /></div>
         <div><Label>Bio</Label><Textarea value={profile.bio ?? ""} onChange={(e) => setProfile({ ...profile, bio: e.target.value })} /></div>
+
+        <div className="border-t pt-4 mt-4">
+          <h3 className="font-semibold text-sm mb-1">Default delivery address</h3>
+          <p className="text-xs text-muted-foreground mb-3">Saved here so you don't have to retype on every order. Used to pre-fill checkout.</p>
+          <div className="space-y-3">
+            <div>
+              <Label>Default shipping address</Label>
+              <Textarea
+                rows={2}
+                value={profile.default_address ?? ""}
+                onChange={(e) => setProfile({ ...profile, default_address: e.target.value })}
+                placeholder="House, street, area, city"
+              />
+            </div>
+            <div>
+              <Label>Default phone</Label>
+              <Input
+                value={profile.default_phone ?? ""}
+                onChange={(e) => setProfile({ ...profile, default_phone: e.target.value })}
+                placeholder="03xx xxxxxxx"
+              />
+            </div>
+          </div>
+        </div>
+
         <Button type="submit" disabled={saving} className="bg-gradient-primary text-primary-foreground">
           {saving && <Loader2 className="h-4 w-4 mr-2 animate-spin" />} Save profile
         </Button>

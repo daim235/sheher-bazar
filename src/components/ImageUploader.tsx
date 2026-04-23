@@ -1,5 +1,6 @@
 import { useRef, useState } from "react";
 import { Upload, Loader2, X } from "lucide-react";
+import imageCompression from "browser-image-compression";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
@@ -24,7 +25,9 @@ interface ImageUploaderProps {
   folder?: string;
 }
 
-const MAX_BYTES = 4 * 1024 * 1024; // 4 MB
+const MAX_INPUT_BYTES = 10 * 1024 * 1024; // accept up to 10 MB; we'll compress before upload
+const TARGET_MAX_BYTES = 600 * 1024; // ~600 KB after compression
+const MAX_DIMENSION = 1600; // px on longest side
 
 export function ImageUploader({
   value,
@@ -46,16 +49,31 @@ export function ImageUploader({
       toast.error("Please choose an image file");
       return;
     }
-    if (file.size > MAX_BYTES) {
-      toast.error("Image must be smaller than 4 MB");
+    if (file.size > MAX_INPUT_BYTES) {
+      toast.error("Image must be smaller than 10 MB");
       return;
     }
     setUploading(true);
+
+    // Compress / resize on the client so we don't blow up storage with originals.
+    let toUpload: File | Blob = file;
+    try {
+      toUpload = await imageCompression(file, {
+        maxSizeMB: TARGET_MAX_BYTES / (1024 * 1024),
+        maxWidthOrHeight: MAX_DIMENSION,
+        useWebWorker: true,
+        initialQuality: 0.82,
+      });
+    } catch {
+      // If compression fails, fall back to the original file.
+      toUpload = file;
+    }
+
     const ext = file.name.split(".").pop()?.toLowerCase() ?? "jpg";
     const path = `${userId}/${folder}/${crypto.randomUUID()}.${ext}`;
     const { error: upErr } = await supabase.storage
       .from("profile-images")
-      .upload(path, file, { cacheControl: "3600", upsert: false, contentType: file.type });
+      .upload(path, toUpload, { cacheControl: "3600", upsert: false, contentType: file.type });
     if (upErr) {
       setUploading(false);
       toast.error(upErr.message);

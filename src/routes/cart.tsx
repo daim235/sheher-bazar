@@ -1,7 +1,7 @@
 // Cart + Cash-on-Delivery checkout
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { useState } from "react";
-import { ShoppingCart, Trash2, Loader2, ArrowLeft, Minus, Plus } from "lucide-react";
+import { useEffect, useState } from "react";
+import { ShoppingCart, Trash2, Loader2, ArrowLeft, Minus, Plus, BookmarkCheck } from "lucide-react";
 import { SiteShell } from "@/components/SiteShell";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -9,9 +9,11 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Separator } from "@/components/ui/separator";
+import { Checkbox } from "@/components/ui/checkbox";
 import { useCart } from "@/lib/cart";
 import { useAuth } from "@/lib/auth";
 import { placeOrders } from "@/lib/api/orders";
+import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/cart")({
@@ -32,6 +34,28 @@ function CartPage() {
   const [phone, setPhone] = useState("");
   const [notes, setNotes] = useState("");
   const [placing, setPlacing] = useState(false);
+  const [saveDefault, setSaveDefault] = useState(true);
+  const [hasSavedAddress, setHasSavedAddress] = useState(false);
+
+  // Pre-fill address + phone from the user's saved defaults.
+  useEffect(() => {
+    if (!user) return;
+    supabase
+      .from("profiles")
+      .select("default_address, default_phone")
+      .eq("id", user.id)
+      .maybeSingle()
+      .then(({ data }) => {
+        if (!data) return;
+        if (data.default_address) {
+          setAddress((cur) => cur || data.default_address || "");
+          setHasSavedAddress(true);
+        }
+        if (data.default_phone) {
+          setPhone((cur) => cur || data.default_phone || "");
+        }
+      });
+  }, [user]);
 
   const handlePlace = async () => {
     if (!user) {
@@ -52,6 +76,13 @@ function CartPage() {
         phone: phone.trim(),
         notes: notes.trim() || undefined,
       });
+      // Save as default for next time, if the user opted in.
+      if (saveDefault && user) {
+        await supabase
+          .from("profiles")
+          .update({ default_address: address.trim(), default_phone: phone.trim() })
+          .eq("id", user.id);
+      }
       const totalAll = orders.reduce((s, o) => s + Number(o.total), 0);
       toast.success(`${orders.length} order${orders.length > 1 ? "s" : ""} placed!`);
       clear();
@@ -132,6 +163,12 @@ function CartPage() {
             <Card className="p-6 sticky top-24">
               <h2 className="font-semibold text-lg">Checkout (Cash on Delivery)</h2>
               <Separator className="my-4" />
+              {hasSavedAddress && (
+                <div className="mb-3 flex items-start gap-2 rounded-md bg-accent/40 border border-border px-3 py-2 text-xs text-foreground">
+                  <BookmarkCheck className="h-4 w-4 text-primary shrink-0 mt-0.5" />
+                  <span>Pre-filled from your saved address. Edit anytime.</span>
+                </div>
+              )}
               <div className="space-y-3">
                 <div>
                   <Label htmlFor="addr">Shipping address *</Label>
@@ -145,6 +182,12 @@ function CartPage() {
                   <Label htmlFor="notes">Notes (optional)</Label>
                   <Textarea id="notes" value={notes} onChange={(e) => setNotes(e.target.value)} placeholder="Delivery instructions" rows={2} />
                 </div>
+                {user && (
+                  <label className="flex items-center gap-2 text-xs text-muted-foreground cursor-pointer pt-1">
+                    <Checkbox checked={saveDefault} onCheckedChange={(v) => setSaveDefault(Boolean(v))} />
+                    Save this address for next time
+                  </label>
+                )}
               </div>
               <Separator className="my-4" />
               <div className="flex justify-between text-sm">

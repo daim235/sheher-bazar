@@ -78,7 +78,12 @@ function MarketplacePage() {
   useEffect(() => {
     setLoading(true);
     let qb = supabase.from("products").select("*").eq("is_active", true);
-    if (search.q) qb = qb.ilike("name", `%${search.q}%`);
+    if (search.q) {
+      // Search across name AND description so vendors can be found by attributes,
+      // not just exact product names.
+      const term = search.q.replace(/[%_]/g, "\\$&");
+      qb = qb.or(`name.ilike.%${term}%,description.ilike.%${term}%`);
+    }
     if (search.category) {
       const cat = categories.find((c) => c.slug === search.category);
       if (cat) qb = qb.eq("category_id", cat.id);
