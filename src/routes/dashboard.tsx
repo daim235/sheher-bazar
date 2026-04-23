@@ -176,7 +176,7 @@ function BookingsTab({ userId }: { userId: string }) {
   useEffect(() => {
     load();
     const channel = supabase
-      .channel(`bookings-${userId}`)
+      .channel(`bookings-${userId}-${Math.random().toString(36).slice(2, 10)}`)
       .on("postgres_changes", { event: "*", schema: "public", table: "bookings" }, () => load())
       .subscribe();
     return () => { supabase.removeChannel(channel); };
@@ -677,7 +677,7 @@ function VendorOrdersTab() {
   useEffect(() => {
     load();
     const channel = supabase
-      .channel("vendor-orders")
+      .channel(`vendor-orders-${Math.random().toString(36).slice(2, 10)}`)
       .on("postgres_changes", { event: "*", schema: "public", table: "orders" }, () => load())
       .subscribe();
     return () => { supabase.removeChannel(channel); };
@@ -843,7 +843,7 @@ function StatsTab({ vendorId }: { vendorId: string }) {
       }
     })();
     const channel = supabase
-      .channel("vendor-stats")
+      .channel(`vendor-stats-${Math.random().toString(36).slice(2, 10)}`)
       .on("postgres_changes", { event: "*", schema: "public", table: "orders" }, async () => {
         const data = await getMyVendorOrders();
         setOrders(data as unknown as VendorOrder[]);
@@ -972,7 +972,7 @@ function MessagesTab({ userId, initialConvo }: { userId: string; initialConvo: s
       setMessages((data ?? []) as Message[]);
     });
     const channel = supabase
-      .channel(`msgs-${activeId}`)
+      .channel(`msgs-${activeId}-${Math.random().toString(36).slice(2, 10)}`)
       .on("postgres_changes", { event: "INSERT", schema: "public", table: "messages", filter: `conversation_id=eq.${activeId}` }, (payload) => {
         setMessages((prev) => [...prev, payload.new as Message]);
       })
@@ -1130,7 +1130,7 @@ function MyOrdersTab() {
   useEffect(() => {
     load();
     const channel = supabase
-      .channel("my-orders")
+      .channel(`my-orders-${Math.random().toString(36).slice(2, 10)}`)
       .on("postgres_changes", { event: "*", schema: "public", table: "orders" }, () => load())
       .subscribe();
     return () => { supabase.removeChannel(channel); };
