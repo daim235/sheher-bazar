@@ -12,6 +12,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { useI18n } from "@/lib/i18n";
 import { supabase } from "@/integrations/supabase/client";
 import { useCart } from "@/lib/cart";
+import { WishlistButton } from "@/components/WishlistButton";
 import { toast } from "sonner";
 
 const searchSchema = z.object({
@@ -201,7 +202,8 @@ function ProductCard({ product }: { product: Product }) {
   const { t } = useI18n();
   const { add } = useCart();
   return (
-    <Card className="overflow-hidden hover:shadow-elegant transition-base bg-gradient-card group">
+    <Card className="overflow-hidden hover:shadow-elegant transition-base bg-gradient-card group relative">
+      <WishlistButton productId={product.id} />
       <Link to="/product/$id" params={{ id: product.id }} className="block">
         <div className="aspect-square bg-secondary relative overflow-hidden">
           {product.image_url ? (
