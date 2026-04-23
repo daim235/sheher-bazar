@@ -13,14 +13,16 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
-import { Loader2, Plus, MessageCircle, Send, Pencil, Trash2, Store, Package, ShoppingBag, BarChart3, Receipt } from "lucide-react";
+import { Loader2, Plus, MessageCircle, Send, Pencil, Trash2, Store, Package, ShoppingBag, BarChart3, Receipt, Heart, Eye } from "lucide-react";
 import { toast } from "sonner";
 import { getMyOrders, getMyVendorOrders, updateOrderStatus, type OrderStatus } from "@/lib/api/orders";
 import { ImageUploader } from "@/components/ImageUploader";
+import { VendorOrderDetail } from "@/components/VendorOrderDetail";
+import { getMyWishlist, removeFromWishlist, type WishlistItem } from "@/lib/api/wishlist";
 
 const dashSearch = z.object({
   tab: fallback(
-    z.enum(["bookings", "listings", "shop", "products", "orders", "stats", "messages", "profile", "my-orders"]),
+    z.enum(["bookings", "listings", "shop", "products", "orders", "stats", "messages", "profile", "my-orders", "wishlist"]),
     "bookings"
   ).default("bookings"),
   c: fallback(z.string(), "").default(""),
@@ -110,6 +112,7 @@ function Dashboard() {
           <TabsList className="bg-card shadow-soft flex-wrap h-auto">
             <TabsTrigger value="bookings">{t("dash.bookings")}</TabsTrigger>
             <TabsTrigger value="my-orders"><Receipt className="h-3.5 w-3.5 mr-1" /> My orders</TabsTrigger>
+            <TabsTrigger value="wishlist"><Heart className="h-3.5 w-3.5 mr-1" /> Wishlist</TabsTrigger>
             <TabsTrigger value="listings">{t("dash.listings")}</TabsTrigger>
             {vendor && <TabsTrigger value="shop"><Store className="h-3.5 w-3.5 mr-1" /> Shop</TabsTrigger>}
             {isApprovedVendor && <TabsTrigger value="products"><Package className="h-3.5 w-3.5 mr-1" /> Products</TabsTrigger>}
@@ -121,6 +124,7 @@ function Dashboard() {
 
           <TabsContent value="bookings" className="mt-6"><BookingsTab userId={user.id} /></TabsContent>
           <TabsContent value="my-orders" className="mt-6"><MyOrdersTab /></TabsContent>
+          <TabsContent value="wishlist" className="mt-6"><WishlistTab /></TabsContent>
           <TabsContent value="listings" className="mt-6"><ListingsTab userId={user.id} /></TabsContent>
           {vendor && <TabsContent value="shop" className="mt-6"><ShopTab vendor={vendor} onUpdate={setVendor} /></TabsContent>}
           {isApprovedVendor && vendor && <TabsContent value="products" className="mt-6"><ProductsTab vendorId={vendor.id} /></TabsContent>}
