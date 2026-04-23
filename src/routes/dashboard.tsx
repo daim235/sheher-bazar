@@ -13,12 +13,16 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
-import { Loader2, Plus, MessageCircle, Send, Pencil, Trash2, Store, Package, ShoppingBag, BarChart3, Receipt, Heart, Eye } from "lucide-react";
+import { Loader2, Plus, MessageCircle, Send, Pencil, Trash2, Store, Package, ShoppingBag, BarChart3, Receipt, Heart, Eye, EyeOff } from "lucide-react";
 import { toast } from "sonner";
 import { getMyOrders, getMyVendorOrders, updateOrderStatus, type OrderStatus } from "@/lib/api/orders";
 import { ImageUploader } from "@/components/ImageUploader";
 import { VendorOrderDetail } from "@/components/VendorOrderDetail";
 import { getMyWishlist, removeFromWishlist, type WishlistItem } from "@/lib/api/wishlist";
+import { ProductCsvImport } from "@/components/ProductCsvImport";
+import { SalesChart } from "@/components/SalesChart";
+import { AddressBook } from "@/components/AddressBook";
+import { Checkbox } from "@/components/ui/checkbox";
 
 const dashSearch = z.object({
   tab: fallback(
