@@ -163,6 +163,12 @@ function CartPage() {
             <Card className="p-6 sticky top-24">
               <h2 className="font-semibold text-lg">Checkout (Cash on Delivery)</h2>
               <Separator className="my-4" />
+              {hasSavedAddress && (
+                <div className="mb-3 flex items-start gap-2 rounded-md bg-accent/40 border border-border px-3 py-2 text-xs text-foreground">
+                  <BookmarkCheck className="h-4 w-4 text-primary shrink-0 mt-0.5" />
+                  <span>Pre-filled from your saved address. Edit anytime.</span>
+                </div>
+              )}
               <div className="space-y-3">
                 <div>
                   <Label htmlFor="addr">Shipping address *</Label>
@@ -176,6 +182,12 @@ function CartPage() {
                   <Label htmlFor="notes">Notes (optional)</Label>
                   <Textarea id="notes" value={notes} onChange={(e) => setNotes(e.target.value)} placeholder="Delivery instructions" rows={2} />
                 </div>
+                {user && (
+                  <label className="flex items-center gap-2 text-xs text-muted-foreground cursor-pointer pt-1">
+                    <Checkbox checked={saveDefault} onCheckedChange={(v) => setSaveDefault(Boolean(v))} />
+                    Save this address for next time
+                  </label>
+                )}
               </div>
               <Separator className="my-4" />
               <div className="flex justify-between text-sm">
