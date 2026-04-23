@@ -295,7 +295,16 @@ function ListingsTab({ userId }: { userId: string }) {
         <Button onClick={() => setOpen(true)} className="bg-gradient-primary text-primary-foreground"><Plus className="h-4 w-4 mr-1" /> New service</Button>
       </div>
       {loading ? <Loader2 className="h-6 w-6 animate-spin text-primary mx-auto mt-10" /> :
-        listings.length === 0 ? <Card className="p-10 text-center text-muted-foreground">No listings yet. Create your first service!</Card> :
+        listings.length === 0 ? (
+          <Card className="p-10 text-center">
+            <Package className="h-10 w-10 text-muted-foreground mx-auto" />
+            <p className="mt-3 font-medium">No service listings yet</p>
+            <p className="text-sm text-muted-foreground mt-1">Add your first service so customers can find and book you.</p>
+            <Button onClick={() => setOpen(true)} className="mt-4 bg-gradient-primary text-primary-foreground">
+              <Plus className="h-4 w-4 mr-1" /> Add a service
+            </Button>
+          </Card>
+        ) :
         <div className="grid sm:grid-cols-2 gap-4">
           {listings.map((s) => (
             <Card key={s.id} className="p-5">
@@ -489,7 +498,14 @@ function ProductsTab({ vendorId }: { vendorId: string }) {
 
       {loading ? <Loader2 className="h-6 w-6 animate-spin text-primary mx-auto mt-10" /> :
         products.length === 0 ? (
-          <Card className="p-10 text-center text-muted-foreground">No products yet. Add your first product to start selling.</Card>
+          <Card className="p-10 text-center">
+            <Package className="h-10 w-10 text-muted-foreground mx-auto" />
+            <p className="mt-3 font-medium">No products yet</p>
+            <p className="text-sm text-muted-foreground mt-1">Add your first product to start selling on Shahar Bazar.</p>
+            <Button onClick={openNew} className="mt-4 bg-gradient-primary text-primary-foreground">
+              <Plus className="h-4 w-4 mr-1" /> Add product
+            </Button>
+          </Card>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
             {products.map((p) => (
@@ -570,6 +586,7 @@ interface VendorOrder {
 function VendorOrdersTab() {
   const [orders, setOrders] = useState<VendorOrder[]>([]);
   const [loading, setLoading] = useState(true);
+  const [detailOrder, setDetailOrder] = useState<VendorOrder | null>(null);
 
   const load = async () => {
     setLoading(true);
@@ -602,7 +619,15 @@ function VendorOrdersTab() {
   };
 
   if (loading) return <Loader2 className="h-6 w-6 animate-spin text-primary mx-auto mt-10" />;
-  if (orders.length === 0) return <Card className="p-10 text-center text-muted-foreground">No orders yet. Once customers buy, they show up here.</Card>;
+  if (orders.length === 0) {
+    return (
+      <Card className="p-10 text-center">
+        <ShoppingBag className="h-10 w-10 text-muted-foreground mx-auto" />
+        <p className="mt-3 font-medium">No orders yet</p>
+        <p className="text-sm text-muted-foreground mt-1">Once customers place orders, they'll appear here for you to confirm and ship.</p>
+      </Card>
+    );
+  }
 
   return (
     <div className="space-y-3">
@@ -633,6 +658,9 @@ function VendorOrdersTab() {
             <div className="font-bold text-primary">Total: Rs {Number(o.total).toLocaleString()}</div>
           </div>
           <div className="mt-3 flex flex-wrap gap-2">
+            <Button size="sm" variant="outline" onClick={() => setDetailOrder(o)}>
+              <Eye className="h-3.5 w-3.5 mr-1" /> View details
+            </Button>
             {o.status === "pending" && <Button size="sm" onClick={() => setStatus(o.id, "confirmed")}>Confirm</Button>}
             {o.status === "confirmed" && <Button size="sm" onClick={() => setStatus(o.id, "shipped")}>Mark shipped</Button>}
             {o.status === "shipped" && <Button size="sm" onClick={() => setStatus(o.id, "delivered")}>Mark delivered</Button>}
@@ -642,6 +670,80 @@ function VendorOrdersTab() {
           </div>
         </Card>
       ))}
+      <VendorOrderDetail open={!!detailOrder} onOpenChange={(v) => !v && setDetailOrder(null)} order={detailOrder} />
+    </div>
+  );
+}
+
+// =================== WISHLIST ===================
+function WishlistTab() {
+  const [items, setItems] = useState<WishlistItem[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  const load = async () => {
+    setLoading(true);
+    try {
+      const data = await getMyWishlist();
+      setItems(data);
+    } finally {
+      setLoading(false);
+    }
+  };
+  useEffect(() => { load(); }, []);
+
+  const remove = async (productId: string) => {
+    try {
+      await removeFromWishlist(productId);
+      setItems((prev) => prev.filter((i) => i.product_id !== productId));
+      toast.success("Removed");
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "Could not remove");
+    }
+  };
+
+  if (loading) return <Loader2 className="h-6 w-6 animate-spin text-primary mx-auto mt-10" />;
+  if (items.length === 0) {
+    return (
+      <Card className="p-10 text-center">
+        <Heart className="h-10 w-10 text-muted-foreground mx-auto" />
+        <p className="mt-3 font-medium">Your wishlist is empty</p>
+        <p className="text-sm text-muted-foreground mt-1">Tap the ♡ on any product to save it for later.</p>
+        <Button asChild className="mt-4 bg-gradient-primary text-primary-foreground">
+          <Link to="/marketplace" search={{ q: "", category: "" }}>Browse marketplace</Link>
+        </Button>
+      </Card>
+    );
+  }
+
+  return (
+    <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
+      {items.map((it) => {
+        const p = it.product;
+        if (!p) return null;
+        return (
+          <Card key={it.id} className="overflow-hidden">
+            <Link to="/product/$id" params={{ id: p.id }} className="block">
+              <div className="aspect-square bg-secondary relative">
+                {p.image_url ? (
+                  <img src={p.image_url} alt={p.name} className="h-full w-full object-cover" loading="lazy" />
+                ) : (
+                  <div className="h-full w-full flex items-center justify-center text-3xl font-bold text-muted-foreground">{p.name.charAt(0)}</div>
+                )}
+                {!p.is_active && <Badge variant="secondary" className="absolute top-2 right-2">Unavailable</Badge>}
+              </div>
+            </Link>
+            <div className="p-3">
+              <Link to="/product/$id" params={{ id: p.id }} className="font-medium text-sm line-clamp-2 hover:text-primary">{p.name}</Link>
+              <div className="mt-2 flex items-center justify-between">
+                <span className="font-bold text-primary">Rs {Number(p.price).toLocaleString()}</span>
+                <Button size="sm" variant="ghost" onClick={() => remove(p.id)}>
+                  <Trash2 className="h-4 w-4 text-destructive" />
+                </Button>
+              </div>
+            </div>
+          </Card>
+        );
+      })}
     </div>
   );
 }
