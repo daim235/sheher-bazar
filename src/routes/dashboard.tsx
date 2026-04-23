@@ -106,7 +106,7 @@ function Dashboard() {
       </div>
 
       <div className="mx-auto max-w-6xl px-6 -mt-6 pb-12">
-        <Tabs value={search.tab} onValueChange={(v) => navigate({ to: "/dashboard", search: (p) => ({ ...p, tab: v as typeof search.tab }) })}>
+        <Tabs value={search.tab} onValueChange={(v) => navigate({ to: "/dashboard", search: (p: { tab: typeof search.tab; c: string }) => ({ ...p, tab: v as typeof search.tab }) })}>
           <TabsList className="bg-card shadow-soft flex-wrap h-auto">
             <TabsTrigger value="bookings">{t("dash.bookings")}</TabsTrigger>
             <TabsTrigger value="my-orders"><Receipt className="h-3.5 w-3.5 mr-1" /> My orders</TabsTrigger>

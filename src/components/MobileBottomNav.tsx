@@ -43,9 +43,8 @@ export function MobileBottomNav() {
           return (
             <li key={it.label}>
               <Link
-                to={target as "/"}
-                // @ts-expect-error - search shape varies per route, runtime is fine
-                search={search}
+                to={target}
+                search={search as never}
                 className={`flex flex-col items-center justify-center gap-0.5 py-2 text-[11px] transition-colors ${
                   active ? "text-primary" : "text-muted-foreground hover:text-foreground"
                 }`}
