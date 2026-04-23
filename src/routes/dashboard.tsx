@@ -231,8 +231,10 @@ function BookingsTab({ userId }: { userId: string }) {
               {isProvider && b.status === "confirmed" && (
                 <Button size="sm" onClick={() => updateStatus(b.id, "completed")}>Mark completed</Button>
               )}
-              {b.customer_id === userId && b.status === "pending" && (
-                <Button size="sm" variant="outline" onClick={() => updateStatus(b.id, "cancelled")}>Cancel</Button>
+              {b.customer_id === userId && (b.status === "pending" || b.status === "confirmed") && (
+                <Button size="sm" variant="outline" onClick={() => {
+                  if (confirm("Cancel this booking?")) updateStatus(b.id, "cancelled");
+                }}>Cancel</Button>
               )}
             </Card>
           );
