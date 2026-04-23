@@ -23,6 +23,8 @@ import { ProductCsvImport } from "@/components/ProductCsvImport";
 import { SalesChart } from "@/components/SalesChart";
 import { AddressBook } from "@/components/AddressBook";
 import { Checkbox } from "@/components/ui/checkbox";
+import { InboxPanel } from "@/components/InboxPanel";
+import { CouponManager } from "@/components/CouponManager";
 
 const dashSearch = z.object({
   tab: fallback(
@@ -134,7 +136,7 @@ function Dashboard() {
           {isApprovedVendor && vendor && <TabsContent value="products" className="mt-6"><ProductsTab vendorId={vendor.id} /></TabsContent>}
           {isApprovedVendor && <TabsContent value="orders" className="mt-6"><VendorOrdersTab /></TabsContent>}
           {isApprovedVendor && vendor && <TabsContent value="stats" className="mt-6"><StatsTab vendorId={vendor.id} /></TabsContent>}
-          <TabsContent value="messages" className="mt-6"><MessagesTab userId={user.id} initialConvo={search.c} /></TabsContent>
+          <TabsContent value="messages" className="mt-6"><InboxPanel userId={user.id} initialConvo={search.c} /></TabsContent>
           <TabsContent value="profile" className="mt-6"><ProfileTab userId={user.id} /></TabsContent>
         </Tabs>
 

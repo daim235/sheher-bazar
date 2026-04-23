@@ -1,5 +1,5 @@
 import { Link, useNavigate } from "@tanstack/react-router";
-import { Menu, Globe, LogOut, LayoutDashboard, ShoppingCart, ShieldCheck, Store } from "lucide-react";
+import { Menu, Globe, LogOut, LayoutDashboard, ShoppingCart, ShieldCheck, Store, MessageCircle } from "lucide-react";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
@@ -13,6 +13,7 @@ import { useI18n } from "@/lib/i18n";
 import { useAuth } from "@/lib/auth";
 import { useIsAdmin } from "@/lib/useIsAdmin";
 import { useCart } from "@/lib/cart";
+import { useUnreadMessages } from "@/hooks/useUnreadMessages";
 import logo from "@/assets/logo-shahar-bazar.png";
 
 export function Header() {
@@ -20,6 +21,7 @@ export function Header() {
   const { user, signOut } = useAuth();
   const { isAdmin } = useIsAdmin();
   const { count } = useCart();
+  const unread = useUnreadMessages(user?.id);
   const navigate = useNavigate();
   const [open, setOpen] = useState(false);
 
@@ -70,6 +72,22 @@ export function Header() {
             <Globe className="h-4 w-4" />
             <span className="text-xs font-semibold">{lang === "en" ? "اردو" : "EN"}</span>
           </Button>
+
+          {user && (
+            <Link
+              to="/dashboard"
+              search={{ tab: "messages" as const, c: "" }}
+              className="relative h-9 w-9 rounded-full hover:bg-accent flex items-center justify-center transition-base"
+              aria-label="Inbox"
+            >
+              <MessageCircle className="h-5 w-5" />
+              {unread > 0 && (
+                <span className="absolute -top-0.5 -right-0.5 h-4 min-w-4 px-1 rounded-full bg-primary text-primary-foreground text-[10px] font-bold flex items-center justify-center">
+                  {unread > 9 ? "9+" : unread}
+                </span>
+              )}
+            </Link>
+          )}
 
           {user ? (
             <DropdownMenu>

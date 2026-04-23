@@ -163,12 +163,85 @@ export type Database = {
         }
         Relationships: []
       }
+      coupon_redemptions: {
+        Row: {
+          amount_off: number
+          coupon_id: string
+          created_at: string
+          customer_id: string
+          id: string
+          order_id: string
+        }
+        Insert: {
+          amount_off?: number
+          coupon_id: string
+          created_at?: string
+          customer_id: string
+          id?: string
+          order_id: string
+        }
+        Update: {
+          amount_off?: number
+          coupon_id?: string
+          created_at?: string
+          customer_id?: string
+          id?: string
+          order_id?: string
+        }
+        Relationships: []
+      }
+      coupons: {
+        Row: {
+          code: string
+          created_at: string
+          discount_type: Database["public"]["Enums"]["discount_type"]
+          discount_value: number
+          expires_at: string | null
+          id: string
+          is_active: boolean
+          max_redemptions: number | null
+          min_order_amount: number
+          redemption_count: number
+          updated_at: string
+          vendor_id: string
+        }
+        Insert: {
+          code: string
+          created_at?: string
+          discount_type?: Database["public"]["Enums"]["discount_type"]
+          discount_value?: number
+          expires_at?: string | null
+          id?: string
+          is_active?: boolean
+          max_redemptions?: number | null
+          min_order_amount?: number
+          redemption_count?: number
+          updated_at?: string
+          vendor_id: string
+        }
+        Update: {
+          code?: string
+          created_at?: string
+          discount_type?: Database["public"]["Enums"]["discount_type"]
+          discount_value?: number
+          expires_at?: string | null
+          id?: string
+          is_active?: boolean
+          max_redemptions?: number | null
+          min_order_amount?: number
+          redemption_count?: number
+          updated_at?: string
+          vendor_id?: string
+        }
+        Relationships: []
+      }
       messages: {
         Row: {
           content: string
           conversation_id: string
           created_at: string
           id: string
+          read_at: string | null
           sender_id: string
         }
         Insert: {
@@ -176,6 +249,7 @@ export type Database = {
           conversation_id: string
           created_at?: string
           id?: string
+          read_at?: string | null
           sender_id: string
         }
         Update: {
@@ -183,6 +257,7 @@ export type Database = {
           conversation_id?: string
           created_at?: string
           id?: string
+          read_at?: string | null
           sender_id?: string
         }
         Relationships: [
@@ -464,6 +539,96 @@ export type Database = {
         }
         Relationships: []
       }
+      refund_requests: {
+        Row: {
+          amount: number
+          created_at: string
+          customer_id: string
+          details: string | null
+          id: string
+          order_id: string
+          reason: string
+          resolved_at: string | null
+          status: Database["public"]["Enums"]["refund_status"]
+          updated_at: string
+          vendor_id: string
+          vendor_response: string | null
+        }
+        Insert: {
+          amount?: number
+          created_at?: string
+          customer_id: string
+          details?: string | null
+          id?: string
+          order_id: string
+          reason: string
+          resolved_at?: string | null
+          status?: Database["public"]["Enums"]["refund_status"]
+          updated_at?: string
+          vendor_id: string
+          vendor_response?: string | null
+        }
+        Update: {
+          amount?: number
+          created_at?: string
+          customer_id?: string
+          details?: string | null
+          id?: string
+          order_id?: string
+          reason?: string
+          resolved_at?: string | null
+          status?: Database["public"]["Enums"]["refund_status"]
+          updated_at?: string
+          vendor_id?: string
+          vendor_response?: string | null
+        }
+        Relationships: []
+      }
+      reports: {
+        Row: {
+          admin_notes: string | null
+          created_at: string
+          details: string | null
+          id: string
+          reason: string
+          reporter_id: string
+          reviewed_at: string | null
+          reviewed_by: string | null
+          status: Database["public"]["Enums"]["report_status"]
+          target_id: string
+          target_type: Database["public"]["Enums"]["report_target"]
+          updated_at: string
+        }
+        Insert: {
+          admin_notes?: string | null
+          created_at?: string
+          details?: string | null
+          id?: string
+          reason: string
+          reporter_id: string
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          status?: Database["public"]["Enums"]["report_status"]
+          target_id: string
+          target_type: Database["public"]["Enums"]["report_target"]
+          updated_at?: string
+        }
+        Update: {
+          admin_notes?: string | null
+          created_at?: string
+          details?: string | null
+          id?: string
+          reason?: string
+          reporter_id?: string
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          status?: Database["public"]["Enums"]["report_status"]
+          target_id?: string
+          target_type?: Database["public"]["Enums"]["report_target"]
+          updated_at?: string
+        }
+        Relationships: []
+      }
       reviews: {
         Row: {
           author_id: string
@@ -597,6 +762,7 @@ export type Database = {
           created_at: string
           description: string | null
           id: string
+          is_verified: boolean
           logo_url: string | null
           owner_id: string
           rating: number | null
@@ -615,6 +781,7 @@ export type Database = {
           created_at?: string
           description?: string | null
           id?: string
+          is_verified?: boolean
           logo_url?: string | null
           owner_id: string
           rating?: number | null
@@ -633,6 +800,7 @@ export type Database = {
           created_at?: string
           description?: string | null
           id?: string
+          is_verified?: boolean
           logo_url?: string | null
           owner_id?: string
           rating?: number | null
@@ -750,6 +918,7 @@ export type Database = {
           created_at: string
           description: string | null
           id: string
+          is_verified: boolean
           logo_url: string | null
           owner_id: string
           rating: number | null
@@ -873,6 +1042,7 @@ export type Database = {
         | "in_progress"
         | "completed"
         | "cancelled"
+      discount_type: "percent" | "fixed"
       listing_type: "service" | "product"
       order_status:
         | "pending"
@@ -881,6 +1051,9 @@ export type Database = {
         | "delivered"
         | "cancelled"
       provider_status: "none" | "pending" | "approved" | "rejected"
+      refund_status: "pending" | "approved" | "rejected" | "refunded"
+      report_status: "open" | "reviewing" | "resolved" | "dismissed"
+      report_target: "product" | "shop" | "service" | "user" | "review"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -1017,6 +1190,7 @@ export const Constants = {
         "completed",
         "cancelled",
       ],
+      discount_type: ["percent", "fixed"],
       listing_type: ["service", "product"],
       order_status: [
         "pending",
@@ -1026,6 +1200,9 @@ export const Constants = {
         "cancelled",
       ],
       provider_status: ["none", "pending", "approved", "rejected"],
+      refund_status: ["pending", "approved", "rejected", "refunded"],
+      report_status: ["open", "reviewing", "resolved", "dismissed"],
+      report_target: ["product", "shop", "service", "user", "review"],
     },
   },
 } as const
