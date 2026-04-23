@@ -451,6 +451,21 @@ function ProviderApplicationCard({ userId }: { userId: string }) {
           />
         </div>
 
+        <div>
+          <Label htmlFor="provider_email">Contact email (Gmail) *</Label>
+          <Input
+            id="provider_email"
+            type="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            placeholder="yourname@gmail.com"
+            required
+          />
+          <p className="text-xs text-muted-foreground mt-1">
+            We'll use this email to contact you about your application.
+          </p>
+        </div>
+
         <div className="grid sm:grid-cols-2 gap-3">
           <div>
             <Label htmlFor="phone">Phone</Label>
