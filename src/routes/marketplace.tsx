@@ -197,22 +197,26 @@ function ProductCard({ product }: { product: Product }) {
   const { add } = useCart();
   return (
     <Card className="overflow-hidden hover:shadow-elegant transition-base bg-gradient-card group">
-      <div className="aspect-square bg-secondary relative overflow-hidden">
-        {product.image_url ? (
-          <img src={product.image_url} alt={product.name} className="h-full w-full object-cover group-hover:scale-105 transition-base" loading="lazy" />
-        ) : (
-          <div className="h-full w-full flex items-center justify-center text-3xl font-bold text-muted-foreground">
-            {product.name.charAt(0)}
-          </div>
-        )}
-        {product.rating > 0 && (
-          <Badge className="absolute top-2 right-2 gap-1 bg-card text-foreground border">
-            <Star className="h-3 w-3 fill-warning text-warning" /> {Number(product.rating).toFixed(1)}
-          </Badge>
-        )}
-      </div>
+      <Link to="/product/$id" params={{ id: product.id }} className="block">
+        <div className="aspect-square bg-secondary relative overflow-hidden">
+          {product.image_url ? (
+            <img src={product.image_url} alt={product.name} className="h-full w-full object-cover group-hover:scale-105 transition-base" loading="lazy" />
+          ) : (
+            <div className="h-full w-full flex items-center justify-center text-3xl font-bold text-muted-foreground">
+              {product.name.charAt(0)}
+            </div>
+          )}
+          {product.rating > 0 && (
+            <Badge className="absolute top-2 right-2 gap-1 bg-card text-foreground border">
+              <Star className="h-3 w-3 fill-warning text-warning" /> {Number(product.rating).toFixed(1)}
+            </Badge>
+          )}
+        </div>
+      </Link>
       <div className="p-4">
-        <h3 className="font-medium text-sm line-clamp-2 min-h-[2.5rem]">{product.name}</h3>
+        <Link to="/product/$id" params={{ id: product.id }}>
+          <h3 className="font-medium text-sm line-clamp-2 min-h-[2.5rem] hover:text-primary transition-colors">{product.name}</h3>
+        </Link>
         <div className="mt-2 flex items-center justify-between">
           <span className="font-bold text-primary">Rs {Number(product.price).toLocaleString()}</span>
           <Button

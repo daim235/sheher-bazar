@@ -144,17 +144,21 @@ function ShopPage() {
             <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
               {products.map((p) => (
                 <Card key={p.id} className="overflow-hidden hover:shadow-elegant transition-base bg-gradient-card group">
-                  <div className="aspect-square bg-secondary relative overflow-hidden">
-                    {p.image_url ? (
-                      <img src={p.image_url} alt={p.name} className="h-full w-full object-cover group-hover:scale-105 transition-base" loading="lazy" />
-                    ) : (
-                      <div className="h-full w-full flex items-center justify-center text-3xl font-bold text-muted-foreground">
-                        {p.name.charAt(0)}
-                      </div>
-                    )}
-                  </div>
+                  <Link to="/product/$id" params={{ id: p.id }} className="block">
+                    <div className="aspect-square bg-secondary relative overflow-hidden">
+                      {p.image_url ? (
+                        <img src={p.image_url} alt={p.name} className="h-full w-full object-cover group-hover:scale-105 transition-base" loading="lazy" />
+                      ) : (
+                        <div className="h-full w-full flex items-center justify-center text-3xl font-bold text-muted-foreground">
+                          {p.name.charAt(0)}
+                        </div>
+                      )}
+                    </div>
+                  </Link>
                   <div className="p-4">
-                    <h3 className="font-medium text-sm line-clamp-2 min-h-[2.5rem]">{p.name}</h3>
+                    <Link to="/product/$id" params={{ id: p.id }}>
+                      <h3 className="font-medium text-sm line-clamp-2 min-h-[2.5rem] hover:text-primary transition-colors">{p.name}</h3>
+                    </Link>
                     <div className="mt-2 flex items-center justify-between">
                       <span className="font-bold text-primary">Rs {Number(p.price).toLocaleString()}</span>
                       <Button
