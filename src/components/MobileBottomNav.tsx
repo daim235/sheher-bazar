@@ -1,29 +1,24 @@
 // Sticky bottom tab bar — visible on mobile only.
 // Mirrors the most-used routes for a marketplace UX.
 import { Link, useLocation } from "@tanstack/react-router";
-import { Home, Store, ShoppingCart, ClipboardList, User } from "lucide-react";
+import { Home, Store, ShoppingCart, MessageCircle, User } from "lucide-react";
 import { useCart } from "@/lib/cart";
 import { useAuth } from "@/lib/auth";
-
-interface Item {
-  to: string;
-  label: string;
-  icon: React.ComponentType<{ className?: string }>;
-  match: (path: string) => boolean;
-}
-
-const items: Item[] = [
-  { to: "/", label: "Home", icon: Home, match: (p) => p === "/" },
-  { to: "/marketplace", label: "Shop", icon: Store, match: (p) => p.startsWith("/marketplace") || p.startsWith("/shop") || p.startsWith("/product") },
-  { to: "/cart", label: "Cart", icon: ShoppingCart, match: (p) => p.startsWith("/cart") },
-  { to: "/dashboard", label: "Orders", icon: ClipboardList, match: (p) => p.startsWith("/dashboard") },
-  { to: "/auth", label: "Account", icon: User, match: (p) => p.startsWith("/auth") },
-];
+import { useUnreadMessages } from "@/hooks/useUnreadMessages";
 
 export function MobileBottomNav() {
   const { pathname } = useLocation();
   const { count } = useCart();
   const { user } = useAuth();
+  const unread = useUnreadMessages(user?.id);
+
+  const items = [
+    { key: "home", to: "/", label: "Home", icon: Home, match: (p: string) => p === "/" },
+    { key: "shop", to: "/marketplace", label: "Shop", icon: Store, match: (p: string) => p.startsWith("/marketplace") || p.startsWith("/shop") || p.startsWith("/product") },
+    { key: "cart", to: "/cart", label: "Cart", icon: ShoppingCart, match: (p: string) => p.startsWith("/cart") },
+    { key: "inbox", to: "/dashboard", label: "Inbox", icon: MessageCircle, match: (p: string) => p.startsWith("/dashboard") },
+    { key: "account", to: "/auth", label: "Account", icon: User, match: (p: string) => p.startsWith("/auth") },
+  ];
 
   return (
     <nav
@@ -35,13 +30,20 @@ export function MobileBottomNav() {
           const active = it.match(pathname);
           // If signed in, the last tab navigates to dashboard profile instead of /auth
           const target = it.to === "/auth" && user ? "/dashboard" : it.to;
-          const search = target === "/dashboard"
-            ? (it.label === "Orders" ? { tab: "my-orders" as const, c: "" } : { tab: "profile" as const, c: "" })
-            : target === "/marketplace"
-              ? { q: "", category: "" }
-              : undefined;
+          const search =
+            target === "/dashboard"
+              ? it.key === "inbox"
+                ? { tab: "messages" as const, c: "" }
+                : { tab: "profile" as const, c: "" }
+              : target === "/marketplace"
+                ? { q: "", category: "" }
+                : undefined;
+          const badge =
+            it.key === "inbox" && user && unread > 0 ? unread :
+            it.key === "cart" && count > 0 ? count :
+            0;
           return (
-            <li key={it.label}>
+            <li key={it.key}>
               <Link
                 to={target}
                 search={search as never}
@@ -51,9 +53,9 @@ export function MobileBottomNav() {
               >
                 <span className="relative">
                   <it.icon className="h-5 w-5" />
-                  {it.label === "Cart" && count > 0 && (
+                  {badge > 0 && (
                     <span className="absolute -top-1.5 -right-2 h-4 min-w-4 px-1 rounded-full bg-primary text-primary-foreground text-[10px] flex items-center justify-center font-bold">
-                      {count > 9 ? "9+" : count}
+                      {badge > 9 ? "9+" : badge}
                     </span>
                   )}
                 </span>
