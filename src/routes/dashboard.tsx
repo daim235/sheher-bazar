@@ -437,11 +437,13 @@ function ProductsTab({ vendorId }: { vendorId: string }) {
   const blank = { name: "", description: "", price: "", image_url: "", stock: "1" };
   const [form, setForm] = useState(blank);
   const [saving, setSaving] = useState(false);
+  const [selected, setSelected] = useState<Set<string>>(new Set());
 
   const load = async () => {
     setLoading(true);
     const { data } = await supabase.from("products").select("*").eq("vendor_id", vendorId).order("created_at", { ascending: false });
     setProducts((data ?? []) as Product[]);
+    setSelected(new Set());
     setLoading(false);
   };
   useEffect(() => { load(); }, [vendorId]);
@@ -491,14 +493,72 @@ function ProductsTab({ vendorId }: { vendorId: string }) {
     if (error) toast.error(error.message); else { toast.success("Deleted"); load(); }
   };
 
+  const toggleSelect = (id: string) => {
+    setSelected((prev) => {
+      const n = new Set(prev);
+      if (n.has(id)) n.delete(id); else n.add(id);
+      return n;
+    });
+  };
+
+  const selectAll = () => {
+    if (selected.size === products.length) setSelected(new Set());
+    else setSelected(new Set(products.map((p) => p.id)));
+  };
+
+  const bulkSetActive = async (active: boolean) => {
+    const ids = Array.from(selected);
+    if (ids.length === 0) return;
+    const { error } = await supabase.from("products").update({ is_active: active }).in("id", ids);
+    if (error) toast.error(error.message);
+    else { toast.success(`${ids.length} ${active ? "shown" : "hidden"}`); load(); }
+  };
+
+  const bulkDelete = async () => {
+    const ids = Array.from(selected);
+    if (ids.length === 0) return;
+    if (!confirm(`Delete ${ids.length} product${ids.length === 1 ? "" : "s"}?`)) return;
+    const { error } = await supabase.from("products").delete().in("id", ids);
+    if (error) toast.error(error.message);
+    else { toast.success(`${ids.length} deleted`); load(); }
+  };
+
   return (
     <div>
-      <div className="flex justify-between items-center mb-4">
+      <div className="flex justify-between items-center mb-4 flex-wrap gap-2">
         <h2 className="font-semibold">Your products ({products.length})</h2>
-        <Button onClick={openNew} className="bg-gradient-primary text-primary-foreground">
-          <Plus className="h-4 w-4 mr-1" /> Add product
-        </Button>
+        <div className="flex gap-2 flex-wrap">
+          <ProductCsvImport vendorId={vendorId} onImported={load} />
+          <Button onClick={openNew} className="bg-gradient-primary text-primary-foreground">
+            <Plus className="h-4 w-4 mr-1" /> Add product
+          </Button>
+        </div>
       </div>
+
+      {products.length > 0 && (
+        <Card className="p-3 mb-4 flex items-center justify-between gap-3 flex-wrap">
+          <label className="flex items-center gap-2 text-sm cursor-pointer">
+            <Checkbox
+              checked={selected.size === products.length && products.length > 0}
+              onCheckedChange={selectAll}
+            />
+            {selected.size > 0 ? `${selected.size} selected` : "Select all"}
+          </label>
+          {selected.size > 0 && (
+            <div className="flex gap-2 flex-wrap">
+              <Button size="sm" variant="outline" onClick={() => bulkSetActive(true)}>
+                <Eye className="h-3.5 w-3.5 mr-1" /> Show
+              </Button>
+              <Button size="sm" variant="outline" onClick={() => bulkSetActive(false)}>
+                <EyeOff className="h-3.5 w-3.5 mr-1" /> Hide
+              </Button>
+              <Button size="sm" variant="outline" onClick={bulkDelete}>
+                <Trash2 className="h-3.5 w-3.5 mr-1 text-destructive" /> Delete
+              </Button>
+            </div>
+          )}
+        </Card>
+      )}
 
       {loading ? <Loader2 className="h-6 w-6 animate-spin text-primary mx-auto mt-10" /> :
         products.length === 0 ? (
@@ -506,9 +566,12 @@ function ProductsTab({ vendorId }: { vendorId: string }) {
             <Package className="h-10 w-10 text-muted-foreground mx-auto" />
             <p className="mt-3 font-medium">No products yet</p>
             <p className="text-sm text-muted-foreground mt-1">Add your first product to start selling on Shahar Bazar.</p>
-            <Button onClick={openNew} className="mt-4 bg-gradient-primary text-primary-foreground">
-              <Plus className="h-4 w-4 mr-1" /> Add product
-            </Button>
+            <div className="mt-4 flex justify-center gap-2 flex-wrap">
+              <Button onClick={openNew} className="bg-gradient-primary text-primary-foreground">
+                <Plus className="h-4 w-4 mr-1" /> Add product
+              </Button>
+              <ProductCsvImport vendorId={vendorId} onImported={load} />
+            </div>
           </Card>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -525,6 +588,12 @@ function ProductsTab({ vendorId }: { vendorId: string }) {
                   <Badge className="absolute top-2 left-2" variant={p.is_active ? "default" : "secondary"}>
                     {p.is_active ? "Active" : "Hidden"}
                   </Badge>
+                  <div className="absolute top-2 right-2 bg-card/90 rounded-md p-1">
+                    <Checkbox
+                      checked={selected.has(p.id)}
+                      onCheckedChange={() => toggleSelect(p.id)}
+                    />
+                  </div>
                 </div>
                 <div className="p-4">
                   <div className="flex justify-between items-start gap-2">
