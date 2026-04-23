@@ -820,3 +820,119 @@ function ProfileTab({ userId }: { userId: string }) {
     </Card>
   );
 }
+
+// =================== MY ORDERS (customer) ===================
+interface MyOrder {
+  id: string;
+  status: OrderStatus;
+  total: number;
+  shipping_address: string | null;
+  phone: string | null;
+  created_at: string;
+  vendor: { shop_name: string; slug: string } | null;
+  items: { product_name: string; quantity: number; unit_price: number }[];
+}
+
+function MyOrdersTab() {
+  const [orders, setOrders] = useState<MyOrder[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  const load = async () => {
+    setLoading(true);
+    try {
+      const data = await getMyOrders();
+      setOrders(data as unknown as MyOrder[]);
+    } finally {
+      setLoading(false);
+    }
+  };
+  useEffect(() => { load(); }, []);
+
+  const cancel = async (id: string) => {
+    if (!confirm("Cancel this order?")) return;
+    try {
+      await updateOrderStatus(id, "cancelled");
+      toast.success("Order cancelled");
+      load();
+    } catch (e: unknown) {
+      toast.error(e instanceof Error ? e.message : "Could not cancel");
+    }
+  };
+
+  if (loading) return <Loader2 className="h-6 w-6 animate-spin text-primary mx-auto mt-10" />;
+
+  if (orders.length === 0) {
+    return (
+      <Card className="p-10 text-center">
+        <Receipt className="h-10 w-10 text-muted-foreground mx-auto" />
+        <p className="mt-3 text-muted-foreground">You haven't placed any orders yet.</p>
+        <Button asChild className="mt-4 bg-gradient-primary text-primary-foreground">
+          <Link to="/marketplace" search={{ q: "", category: "" }}>Shop the marketplace</Link>
+        </Button>
+      </Card>
+    );
+  }
+
+  const statusColor: Record<OrderStatus, "default" | "secondary" | "destructive"> = {
+    pending: "secondary",
+    confirmed: "default",
+    shipped: "default",
+    delivered: "default",
+    cancelled: "destructive",
+  };
+
+  return (
+    <div className="space-y-3">
+      {orders.map((o) => (
+        <Card key={o.id} className="p-5">
+          <div className="flex items-start justify-between gap-3 flex-wrap">
+            <div>
+              <div className="flex items-center gap-2">
+                <span className="font-semibold">{o.vendor?.shop_name ?? "Shop"}</span>
+                <Badge variant={statusColor[o.status]}>{o.status}</Badge>
+              </div>
+              <div className="text-xs text-muted-foreground mt-1">
+                #{o.id.slice(0, 8).toUpperCase()} · {new Date(o.created_at).toLocaleString()}
+              </div>
+            </div>
+            <div className="text-right">
+              <div className="font-bold text-primary text-lg">Rs {Number(o.total).toLocaleString()}</div>
+              <div className="text-xs text-muted-foreground">Cash on delivery</div>
+            </div>
+          </div>
+          <ul className="mt-3 text-sm space-y-1 border-t pt-3">
+            {o.items.map((it, i) => (
+              <li key={i} className="flex justify-between">
+                <span>{it.quantity}× {it.product_name}</span>
+                <span>Rs {(Number(it.unit_price) * it.quantity).toLocaleString()}</span>
+              </li>
+            ))}
+          </ul>
+          {o.shipping_address && (
+            <div className="mt-3 text-xs text-muted-foreground border-t pt-3">
+              📍 {o.shipping_address} · 📞 {o.phone}
+            </div>
+          )}
+          {o.status === "pending" && (
+            <div className="mt-3 flex justify-end">
+              <Button size="sm" variant="outline" onClick={() => cancel(o.id)}>
+                Cancel order
+              </Button>
+            </div>
+          )}
+          {o.vendor?.slug && (
+            <div className="mt-2 text-right">
+              <Link
+                to="/shop/$slug"
+                params={{ slug: o.vendor.slug }}
+                className="text-xs text-primary hover:underline"
+              >
+                Visit shop →
+              </Link>
+            </div>
+          )}
+        </Card>
+      ))}
+    </div>
+  );
+}
