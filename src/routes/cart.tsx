@@ -14,6 +14,8 @@ import { useCart } from "@/lib/cart";
 import { useAuth } from "@/lib/auth";
 import { placeOrders } from "@/lib/api/orders";
 import { supabase } from "@/integrations/supabase/client";
+import { AddressPicker } from "@/components/AddressPicker";
+import type { Address } from "@/lib/api/addresses";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/cart")({
@@ -36,6 +38,14 @@ function CartPage() {
   const [placing, setPlacing] = useState(false);
   const [saveDefault, setSaveDefault] = useState(true);
   const [hasSavedAddress, setHasSavedAddress] = useState(false);
+  const [selectedAddressId, setSelectedAddressId] = useState<string | null>(null);
+
+  const handleSelectAddress = (a: Address) => {
+    setSelectedAddressId(a.id);
+    setAddress(a.address_line);
+    setPhone(a.phone);
+    setHasSavedAddress(true);
+  };
 
   // Pre-fill address + phone from the user's saved defaults.
   useEffect(() => {
@@ -170,9 +180,12 @@ function CartPage() {
                 </div>
               )}
               <div className="space-y-3">
+                {user && (
+                  <AddressPicker selectedId={selectedAddressId} onSelect={handleSelectAddress} />
+                )}
                 <div>
                   <Label htmlFor="addr">Shipping address *</Label>
-                  <Textarea id="addr" value={address} onChange={(e) => setAddress(e.target.value)} placeholder="House, street, area, city" rows={2} />
+                  <Textarea id="addr" value={address} onChange={(e) => { setAddress(e.target.value); setSelectedAddressId(null); }} placeholder="House, street, area, city" rows={2} />
                 </div>
                 <div>
                   <Label htmlFor="phone">Phone number *</Label>
