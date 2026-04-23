@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { ReviewForm } from "@/components/ReviewForm";
 import { ContactShopButton } from "@/components/ContactShopButton";
+import { WishlistButton } from "@/components/WishlistButton";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/lib/auth";
 import { useCart } from "@/lib/cart";
@@ -173,6 +174,7 @@ function ProductDetail() {
                 <ShoppingCart className="h-4 w-4 mr-2" />
                 {outOfStock ? "Out of stock" : "Add to cart"}
               </Button>
+              <WishlistButton productId={product.id} variant="full" />
               {vendor && user?.id !== vendor.owner_id && (
                 <ContactShopButton otherUserId={vendor.owner_id} label="Message" />
               )}
