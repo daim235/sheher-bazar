@@ -12,18 +12,20 @@ import {
 import { useI18n } from "@/lib/i18n";
 import { useAuth } from "@/lib/auth";
 import { useIsAdmin } from "@/lib/useIsAdmin";
+import { useCart } from "@/lib/cart";
 import logo from "@/assets/logo-shahar-bazar.png";
 
 export function Header() {
   const { t, lang, setLang } = useI18n();
   const { user, signOut } = useAuth();
   const { isAdmin } = useIsAdmin();
+  const { count } = useCart();
   const navigate = useNavigate();
   const [open, setOpen] = useState(false);
 
   const navItems = [
     { to: "/" as const, label: t("nav.home") },
-    { to: "/grocery" as const, label: t("nav.grocery") },
+    { to: "/marketplace" as const, label: t("nav.marketplace") },
     { to: "/services" as const, label: t("nav.services") },
     { to: "/about" as const, label: t("nav.about") },
   ];
@@ -119,15 +121,18 @@ export function Header() {
             </>
           )}
 
-          <button
+          <Link
+            to="/cart"
             className="relative h-9 w-9 rounded-full hover:bg-accent flex items-center justify-center transition-base"
             aria-label="Cart"
           >
             <ShoppingCart className="h-5 w-5" />
-            <span className="absolute -top-0.5 -right-0.5 h-4 w-4 rounded-full bg-accent-orange text-accent-orange-foreground text-[10px] font-bold flex items-center justify-center">
-              0
-            </span>
-          </button>
+            {count > 0 && (
+              <span className="absolute -top-0.5 -right-0.5 h-4 min-w-4 px-1 rounded-full bg-accent-orange text-accent-orange-foreground text-[10px] font-bold flex items-center justify-center">
+                {count}
+              </span>
+            )}
+          </Link>
 
           <DropdownMenu open={open} onOpenChange={setOpen}>
             <DropdownMenuTrigger asChild>

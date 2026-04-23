@@ -17,6 +17,9 @@ export type Database = {
       bookings: {
         Row: {
           address: string | null
+          agreed_price: number
+          commission_amount: number
+          commission_pct: number
           created_at: string
           customer_id: string
           id: string
@@ -29,6 +32,9 @@ export type Database = {
         }
         Insert: {
           address?: string | null
+          agreed_price?: number
+          commission_amount?: number
+          commission_pct?: number
           created_at?: string
           customer_id: string
           id?: string
@@ -41,6 +47,9 @@ export type Database = {
         }
         Update: {
           address?: string | null
+          agreed_price?: number
+          commission_amount?: number
+          commission_pct?: number
           created_at?: string
           customer_id?: string
           id?: string
@@ -274,6 +283,27 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      platform_settings: {
+        Row: {
+          booking_commission_pct: number
+          id: string
+          updated_at: string
+          vendor_commission_pct: number
+        }
+        Insert: {
+          booking_commission_pct?: number
+          id?: string
+          updated_at?: string
+          vendor_commission_pct?: number
+        }
+        Update: {
+          booking_commission_pct?: number
+          id?: string
+          updated_at?: string
+          vendor_commission_pct?: number
+        }
+        Relationships: []
       }
       products: {
         Row: {
