@@ -35,7 +35,7 @@ export function ImageUploader({
   userId,
   label,
   hint,
-  shape = "circle",
+  shape = "rect",
   aspectClassName = "aspect-video",
   folder = "img",
 }: ImageUploaderProps) {
