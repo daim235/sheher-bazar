@@ -1092,6 +1092,10 @@ function ProfileTab({ userId }: { userId: string }) {
           {saving && <Loader2 className="h-4 w-4 mr-2 animate-spin" />} Save profile
         </Button>
       </form>
+
+      <div className="mt-8 border-t pt-6">
+        <AddressBook />
+      </div>
     </Card>
   );
 }
