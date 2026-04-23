@@ -40,7 +40,7 @@ function OrderSuccessPage() {
               <Separator className="mb-4" />
               <h2 className="font-semibold mb-2">Order reference{orderIds.length > 1 ? "s" : ""}</h2>
               <ul className="space-y-1 text-sm">
-                {orderIds.map((id) => (
+                {orderIds.map((id: string) => (
                   <li key={id} className="font-mono text-xs bg-secondary px-3 py-2 rounded">
                     #{id.slice(0, 8).toUpperCase()}
                   </li>
