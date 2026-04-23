@@ -15,13 +15,19 @@ export function useUnreadMessages(userId: string | undefined): number {
     };
     refresh();
 
-    const channel = supabase
-      .channel(`unread-${userId}`)
+    // Use a unique channel name per mount to avoid "cannot add callbacks after subscribe()"
+    // when React StrictMode double-invokes effects or the hook remounts quickly.
+    const channelName = `unread-${userId}-${Math.random().toString(36).slice(2, 10)}`;
+    const channel = supabase.channel(channelName);
+    channel
       .on("postgres_changes", { event: "INSERT", schema: "public", table: "messages" }, () => refresh())
       .on("postgres_changes", { event: "UPDATE", schema: "public", table: "messages" }, () => refresh())
       .subscribe();
 
-    return () => { active = false; supabase.removeChannel(channel); };
+    return () => {
+      active = false;
+      supabase.removeChannel(channel);
+    };
   }, [userId]);
 
   return count;
