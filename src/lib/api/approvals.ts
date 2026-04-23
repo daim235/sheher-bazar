@@ -13,6 +13,7 @@ export interface VendorApplicationInput {
   city?: string;
   logo_url?: string;
   banner_url?: string;
+  contact_email?: string;
 }
 
 /** Customer applies to become a vendor — creates a pending vendor record. */
@@ -47,6 +48,7 @@ export interface ProviderApplicationInput {
   bio?: string;
   phone?: string;
   city?: string;
+  email?: string;
 }
 
 /** Submit / re-submit application to be a service provider. */
@@ -56,6 +58,7 @@ export async function applyAsProvider(input: ProviderApplicationInput) {
     _bio: input.bio ?? undefined,
     _phone: input.phone ?? undefined,
     _city: input.city ?? undefined,
+    _email: input.email ?? undefined,
   });
   if (error) throw error;
   return data;
