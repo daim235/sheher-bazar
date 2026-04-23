@@ -20,7 +20,7 @@ import { ImageUploader } from "@/components/ImageUploader";
 
 const dashSearch = z.object({
   tab: fallback(
-    z.enum(["bookings", "listings", "shop", "products", "orders", "stats", "messages", "profile"]),
+    z.enum(["bookings", "listings", "shop", "products", "orders", "stats", "messages", "profile", "my-orders"]),
     "bookings"
   ).default("bookings"),
   c: fallback(z.string(), "").default(""),
