@@ -12,6 +12,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "
 import { useI18n } from "@/lib/i18n";
 import { useAuth } from "@/lib/auth";
 import { supabase } from "@/integrations/supabase/client";
+import { ReviewForm } from "@/components/ReviewForm";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/service/$id")({
@@ -50,19 +51,24 @@ function ServiceDetail() {
   const [notes, setNotes] = useState("");
   const [submitting, setSubmitting] = useState(false);
 
+  const loadReviews = async () => {
+    const { data: r } = await supabase.from("reviews").select("*").eq("service_id", id).order("created_at", { ascending: false }).limit(50);
+    setReviews((r ?? []) as Review[]);
+  };
+
   useEffect(() => {
     (async () => {
       const { data: s } = await supabase.from("services").select("*").eq("id", id).maybeSingle();
       if (!s) { setLoading(false); return; }
       setService(s as Service);
-      const [{ data: p }, { data: r }] = await Promise.all([
+      const [{ data: p }] = await Promise.all([
         supabase.from("profiles").select("*").eq("id", s.provider_id).maybeSingle(),
-        supabase.from("reviews").select("*").eq("service_id", id).order("created_at", { ascending: false }).limit(20),
+        loadReviews(),
       ]);
       setProvider(p as Profile | null);
-      setReviews((r ?? []) as Review[]);
       setLoading(false);
     })();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id]);
 
   const handleBook = async () => {
@@ -162,6 +168,18 @@ function ServiceDetail() {
                     </div>
                   ))}
                 </div>
+              )}
+
+              {!user ? (
+                <div className="border-t pt-4 mt-4 text-sm text-muted-foreground">
+                  <Link to="/auth" className="text-primary hover:underline">Sign in</Link> to leave a review.
+                </div>
+              ) : user.id === service.provider_id ? (
+                <div className="border-t pt-4 mt-4 text-sm text-muted-foreground">You can't review your own service.</div>
+              ) : reviews.some((r) => r.author_id === user.id) ? (
+                <div className="border-t pt-4 mt-4 text-sm text-muted-foreground">You've already reviewed this service.</div>
+              ) : (
+                <ReviewForm serviceId={service.id} authorId={user.id} onSubmitted={loadReviews} />
               )}
             </Card>
           </div>
