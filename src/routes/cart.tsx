@@ -180,9 +180,12 @@ function CartPage() {
                 </div>
               )}
               <div className="space-y-3">
+                {user && (
+                  <AddressPicker selectedId={selectedAddressId} onSelect={handleSelectAddress} />
+                )}
                 <div>
                   <Label htmlFor="addr">Shipping address *</Label>
-                  <Textarea id="addr" value={address} onChange={(e) => setAddress(e.target.value)} placeholder="House, street, area, city" rows={2} />
+                  <Textarea id="addr" value={address} onChange={(e) => { setAddress(e.target.value); setSelectedAddressId(null); }} placeholder="House, street, area, city" rows={2} />
                 </div>
                 <div>
                   <Label htmlFor="phone">Phone number *</Label>
