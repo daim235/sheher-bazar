@@ -163,7 +163,15 @@ function BookingsTab({ userId }: { userId: string }) {
     setBookings((data ?? []) as unknown as (Booking & { service: Service | null })[]);
     setLoading(false);
   };
-  useEffect(() => { load(); }, [userId]);
+  useEffect(() => {
+    load();
+    const channel = supabase
+      .channel(`bookings-${userId}`)
+      .on("postgres_changes", { event: "*", schema: "public", table: "bookings" }, () => load())
+      .subscribe();
+    return () => { supabase.removeChannel(channel); };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [userId]);
 
   const updateStatus = async (id: string, status: string) => {
     const { error } = await supabase.from("bookings").update({ status: status as never }).eq("id", id);
@@ -570,7 +578,14 @@ function VendorOrdersTab() {
       setLoading(false);
     }
   };
-  useEffect(() => { load(); }, []);
+  useEffect(() => {
+    load();
+    const channel = supabase
+      .channel("vendor-orders")
+      .on("postgres_changes", { event: "*", schema: "public", table: "orders" }, () => load())
+      .subscribe();
+    return () => { supabase.removeChannel(channel); };
+  }, []);
 
   const setStatus = async (id: string, status: OrderStatus) => {
     try {
