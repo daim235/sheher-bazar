@@ -76,6 +76,13 @@ function CartPage() {
         phone: phone.trim(),
         notes: notes.trim() || undefined,
       });
+      // Save as default for next time, if the user opted in.
+      if (saveDefault && user) {
+        await supabase
+          .from("profiles")
+          .update({ default_address: address.trim(), default_phone: phone.trim() })
+          .eq("id", user.id);
+      }
       const totalAll = orders.reduce((s, o) => s + Number(o.total), 0);
       toast.success(`${orders.length} order${orders.length > 1 ? "s" : ""} placed!`);
       clear();
