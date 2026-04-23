@@ -16,6 +16,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "
 import { Loader2, Plus, MessageCircle, Send, Pencil, Trash2, Store, Package, ShoppingBag, BarChart3 } from "lucide-react";
 import { toast } from "sonner";
 import { getMyVendorOrders, updateOrderStatus, type OrderStatus } from "@/lib/api/orders";
+import { ImageUploader } from "@/components/ImageUploader";
 
 const dashSearch = z.object({
   tab: fallback(
