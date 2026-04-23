@@ -372,6 +372,8 @@ export type Database = {
           city: string | null
           contact_email: string | null
           created_at: string
+          default_address: string | null
+          default_phone: string | null
           full_name: string | null
           id: string
           phone: string | null
@@ -389,6 +391,8 @@ export type Database = {
           city?: string | null
           contact_email?: string | null
           created_at?: string
+          default_address?: string | null
+          default_phone?: string | null
           full_name?: string | null
           id: string
           phone?: string | null
@@ -406,6 +410,8 @@ export type Database = {
           city?: string | null
           contact_email?: string | null
           created_at?: string
+          default_address?: string | null
+          default_phone?: string | null
           full_name?: string | null
           id?: string
           phone?: string | null
@@ -651,6 +657,8 @@ export type Database = {
           city: string | null
           contact_email: string | null
           created_at: string
+          default_address: string | null
+          default_phone: string | null
           full_name: string | null
           id: string
           phone: string | null
@@ -714,6 +722,8 @@ export type Database = {
               city: string | null
               contact_email: string | null
               created_at: string
+              default_address: string | null
+              default_phone: string | null
               full_name: string | null
               id: string
               phone: string | null
@@ -746,6 +756,8 @@ export type Database = {
               city: string | null
               contact_email: string | null
               created_at: string
+              default_address: string | null
+              default_phone: string | null
               full_name: string | null
               id: string
               phone: string | null
