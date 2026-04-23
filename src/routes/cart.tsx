@@ -52,9 +52,17 @@ function CartPage() {
         phone: phone.trim(),
         notes: notes.trim() || undefined,
       });
-      toast.success(`${orders.length} order${orders.length > 1 ? "s" : ""} placed! Vendors will confirm shortly.`);
+      const totalAll = orders.reduce((s, o) => s + Number(o.total), 0);
+      toast.success(`${orders.length} order${orders.length > 1 ? "s" : ""} placed!`);
       clear();
-      navigate({ to: "/dashboard", search: { tab: "bookings", c: "" } });
+      navigate({
+        to: "/order-success",
+        search: {
+          ids: orders.map((o) => o.id).join(","),
+          total: totalAll,
+          count: orders.length,
+        },
+      });
     } catch (e: unknown) {
       const msg = e instanceof Error ? e.message : "Could not place order";
       toast.error(msg);
