@@ -194,6 +194,14 @@ function VendorsPanel() {
                 <TableCell>
                   <div className="font-medium">{v.shop_name}</div>
                   <div className="text-xs text-muted-foreground">{v.slug}</div>
+                  {v.contact_email && (
+                    <a
+                      href={`mailto:${v.contact_email}`}
+                      className="text-xs text-primary hover:underline"
+                    >
+                      {v.contact_email}
+                    </a>
+                  )}
                 </TableCell>
                 <TableCell>{v.city ?? "—"}</TableCell>
                 <TableCell>
@@ -291,6 +299,14 @@ function ProvidersPanel() {
                 <TableCell>
                   <div className="font-medium">{p.full_name ?? "—"}</div>
                   <div className="text-xs text-muted-foreground">{p.phone ?? ""}</div>
+                  {p.contact_email && (
+                    <a
+                      href={`mailto:${p.contact_email}`}
+                      className="text-xs text-primary hover:underline"
+                    >
+                      {p.contact_email}
+                    </a>
+                  )}
                 </TableCell>
                 <TableCell className="max-w-[260px] truncate">{p.provider_skills ?? "—"}</TableCell>
                 <TableCell>{p.city ?? "—"}</TableCell>
