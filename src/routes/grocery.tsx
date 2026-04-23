@@ -21,5 +21,5 @@ export const Route = createFileRoute("/grocery")({
 
 function GroceryPage() {
   // Grocery is a curated view of the marketplace
-  return <Navigate to="/marketplace" search={{ q: "", category: "grocery" }} />;
+  return <Navigate to="/marketplace" search={{ q: "", category: "groceries" }} />;
 }
