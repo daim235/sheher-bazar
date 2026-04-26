@@ -779,6 +779,9 @@ function VendorOrdersTab() {
               Delivery: {o.courier_name || "Courier"}{o.tracking_number ? ` · ${o.tracking_number}` : ""}{o.estimated_delivery_at ? ` · ETA ${new Date(o.estimated_delivery_at).toLocaleDateString()}` : ""}
             </div>
           )}
+          <div className="mt-3">
+            <OrderTimeline order={o} compact />
+          </div>
           <div className="mt-3 flex flex-wrap gap-2">
             <Button size="sm" variant="outline" onClick={() => setDetailOrder(o)}>
               <Eye className="h-3.5 w-3.5 mr-1" /> View details
@@ -1177,6 +1180,9 @@ interface MyOrder {
   courier_name?: string | null;
   tracking_number?: string | null;
   estimated_delivery_at?: string | null;
+  confirmed_at?: string | null;
+  shipped_at?: string | null;
+  delivered_at?: string | null;
   shipping_address: string | null;
   phone: string | null;
   created_at: string;
