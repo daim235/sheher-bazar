@@ -1165,6 +1165,14 @@ interface MyOrder {
   id: string;
   status: OrderStatus;
   total: number;
+  subtotal?: number;
+  discount_total?: number;
+  delivery_fee?: number;
+  payment_method?: string;
+  payment_status?: string;
+  courier_name?: string | null;
+  tracking_number?: string | null;
+  estimated_delivery_at?: string | null;
   shipping_address: string | null;
   phone: string | null;
   created_at: string;
@@ -1243,7 +1251,7 @@ function MyOrdersTab() {
             </div>
             <div className="text-right">
               <div className="font-bold text-primary text-lg">Rs {Number(o.total).toLocaleString()}</div>
-              <div className="text-xs text-muted-foreground">Cash on delivery</div>
+              <div className="text-xs text-muted-foreground">{o.payment_method === "online" ? "Online payment" : "Cash on delivery"} · {o.payment_status ?? "pending"}</div>
             </div>
           </div>
           <ul className="mt-3 text-sm space-y-1 border-t pt-3">
@@ -1254,6 +1262,18 @@ function MyOrdersTab() {
               </li>
             ))}
           </ul>
+          {(Number(o.discount_total ?? 0) > 0 || Number(o.delivery_fee ?? 0) > 0) && (
+            <div className="mt-3 space-y-1 text-xs border-t pt-3">
+              <div className="flex justify-between"><span className="text-muted-foreground">Subtotal</span><span>Rs {Number(o.subtotal ?? o.total).toLocaleString()}</span></div>
+              {Number(o.discount_total ?? 0) > 0 && <div className="flex justify-between text-primary"><span>Discount</span><span>- Rs {Number(o.discount_total).toLocaleString()}</span></div>}
+              {Number(o.delivery_fee ?? 0) > 0 && <div className="flex justify-between"><span className="text-muted-foreground">Delivery</span><span>Rs {Number(o.delivery_fee).toLocaleString()}</span></div>}
+            </div>
+          )}
+          {(o.courier_name || o.tracking_number || o.estimated_delivery_at) && (
+            <div className="mt-3 rounded-md bg-accent/50 px-3 py-2 text-xs">
+              🚚 {o.courier_name || "Delivery"}{o.tracking_number ? ` · Tracking: ${o.tracking_number}` : ""}{o.estimated_delivery_at ? ` · ETA ${new Date(o.estimated_delivery_at).toLocaleString()}` : ""}
+            </div>
+          )}
           {o.shipping_address && (
             <div className="mt-3 text-xs text-muted-foreground border-t pt-3">
               📍 {o.shipping_address} · 📞 {o.phone}
