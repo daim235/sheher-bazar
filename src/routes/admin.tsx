@@ -21,7 +21,7 @@ import {
   listPendingVendors,
   listPendingProviders,
 } from "@/lib/api/approvals";
-import { Loader2, ShieldCheck, Store, Users, Package, Calendar } from "lucide-react";
+import { Loader2, ShieldCheck, Store, Users, Package, Calendar, Settings, Tag } from "lucide-react";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/admin")({
@@ -93,7 +93,7 @@ function AdminPage() {
 
       <main className="mx-auto max-w-7xl px-4 sm:px-6 py-6">
         <Tabs defaultValue="vendors">
-          <TabsList className="grid grid-cols-2 sm:grid-cols-4 w-full max-w-2xl">
+          <TabsList className="grid grid-cols-2 sm:grid-cols-6 w-full max-w-4xl">
             <TabsTrigger value="vendors" className="gap-1.5">
               <Store className="h-4 w-4" /> Vendors
             </TabsTrigger>
@@ -105,6 +105,12 @@ function AdminPage() {
             </TabsTrigger>
             <TabsTrigger value="bookings" className="gap-1.5">
               <Calendar className="h-4 w-4" /> Bookings
+            </TabsTrigger>
+            <TabsTrigger value="coupons" className="gap-1.5">
+              <Tag className="h-4 w-4" /> Coupons
+            </TabsTrigger>
+            <TabsTrigger value="settings" className="gap-1.5">
+              <Settings className="h-4 w-4" /> Settings
             </TabsTrigger>
           </TabsList>
 
@@ -119,6 +125,12 @@ function AdminPage() {
           </TabsContent>
           <TabsContent value="bookings" className="mt-6">
             <BookingsPanel />
+          </TabsContent>
+          <TabsContent value="coupons" className="mt-6">
+            <CouponsPanel />
+          </TabsContent>
+          <TabsContent value="settings" className="mt-6">
+            <SettingsPanel />
           </TabsContent>
         </Tabs>
       </main>
