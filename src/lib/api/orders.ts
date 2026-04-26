@@ -2,6 +2,7 @@
 import { supabase } from "@/integrations/supabase/client";
 
 export type OrderStatus = "pending" | "confirmed" | "shipped" | "delivered" | "cancelled";
+export type PaymentMethod = "cod" | "online";
 
 export interface CartItem {
   product_id: string;
@@ -16,6 +17,9 @@ export interface PlaceOrderInput {
   shipping_address: string;
   phone: string;
   notes?: string;
+  payment_method?: PaymentMethod;
+  delivery_fee?: number;
+  coupons?: Record<string, { coupon_id: string; discount: number }>;
 }
 
 export interface PlacedOrder {
@@ -43,16 +47,25 @@ export async function placeOrders(input: PlaceOrderInput): Promise<PlacedOrder[]
 
   const placed: PlacedOrder[] = [];
   for (const [vendorId, items] of byVendor) {
-    const total = items.reduce((sum, it) => sum + it.price * it.quantity, 0);
+    const subtotal = items.reduce((sum, it) => sum + it.price * it.quantity, 0);
+    const coupon = input.coupons?.[vendorId];
+    const discountTotal = Math.min(subtotal, Math.max(0, coupon?.discount ?? 0));
+    const deliveryFee = Math.max(0, input.delivery_fee ?? 0);
+    const total = Math.max(0, subtotal - discountTotal + deliveryFee);
     const { data: order, error: orderErr } = await supabase
       .from("orders")
       .insert({
         customer_id: customerId,
         vendor_id: vendorId,
+        subtotal,
+        discount_total: discountTotal,
+        delivery_fee: deliveryFee,
         total,
         shipping_address: input.shipping_address,
         phone: input.phone,
         notes: input.notes ?? null,
+        payment_method: input.payment_method ?? "cod",
+        payment_status: input.payment_method === "online" ? "pending" : "pending",
       })
       .select()
       .single();
@@ -67,6 +80,16 @@ export async function placeOrders(input: PlaceOrderInput): Promise<PlacedOrder[]
     }));
     const { error: itemsErr } = await supabase.from("order_items").insert(itemsRows);
     if (itemsErr) throw itemsErr;
+
+    if (coupon && discountTotal > 0) {
+      const { error: redemptionErr } = await supabase.from("coupon_redemptions").insert({
+        order_id: order.id,
+        coupon_id: coupon.coupon_id,
+        customer_id: customerId,
+        amount_off: discountTotal,
+      });
+      if (redemptionErr) throw redemptionErr;
+    }
 
     placed.push({ id: order.id, vendor_id: vendorId, total });
   }
