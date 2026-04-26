@@ -25,6 +25,7 @@ import { AddressBook } from "@/components/AddressBook";
 import { Checkbox } from "@/components/ui/checkbox";
 import { InboxPanel } from "@/components/InboxPanel";
 import { CouponManager } from "@/components/CouponManager";
+import { OrderTimeline } from "@/components/OrderTimeline";
 
 const dashSearch = z.object({
   tab: fallback(
@@ -665,6 +666,9 @@ interface VendorOrder {
   phone: string | null;
   notes: string | null;
   created_at: string;
+  confirmed_at?: string | null;
+  shipped_at?: string | null;
+  delivered_at?: string | null;
   items: { id: string; product_name: string; unit_price: number; quantity: number }[];
 }
 function VendorOrdersTab() {
