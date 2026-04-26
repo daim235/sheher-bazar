@@ -677,6 +677,9 @@ function VendorOrdersTab() {
   const [detailOrder, setDetailOrder] = useState<VendorOrder | null>(null);
   const [trackingOrder, setTrackingOrder] = useState<VendorOrder | null>(null);
   const [trackingForm, setTrackingForm] = useState({ courier_name: "", tracking_number: "", estimated_delivery_at: "" });
+  const [statusOrder, setStatusOrder] = useState<VendorOrder | null>(null);
+  const [statusTarget, setStatusTarget] = useState<OrderStatus | null>(null);
+  const [statusForm, setStatusForm] = useState({ confirmed_at: "", shipped_at: "", delivered_at: "" });
 
   const load = async () => {
     setLoading(true);
@@ -706,6 +709,34 @@ function VendorOrdersTab() {
     } catch (e: unknown) {
       toast.error(e instanceof Error ? e.message : "Could not update");
     }
+  };
+
+  const toDateTimeLocal = (value?: string | null) => {
+    const date = value ? new Date(value) : new Date();
+    return new Date(date.getTime() - date.getTimezoneOffset() * 60000).toISOString().slice(0, 16);
+  };
+
+  const openStatusDialog = (order: VendorOrder, status: OrderStatus) => {
+    setStatusOrder(order);
+    setStatusTarget(status);
+    const now = toDateTimeLocal();
+    setStatusForm({
+      confirmed_at: order.confirmed_at ? toDateTimeLocal(order.confirmed_at) : now,
+      shipped_at: order.shipped_at ? toDateTimeLocal(order.shipped_at) : now,
+      delivered_at: order.delivered_at ? toDateTimeLocal(order.delivered_at) : now,
+    });
+  };
+
+  const saveStatusChange = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!statusOrder || !statusTarget) return;
+    const payload: Partial<VendorOrder> = { status: statusTarget };
+    if (["confirmed", "shipped", "delivered"].includes(statusTarget)) payload.confirmed_at = new Date(statusForm.confirmed_at).toISOString();
+    if (["shipped", "delivered"].includes(statusTarget)) payload.shipped_at = new Date(statusForm.shipped_at).toISOString();
+    if (statusTarget === "delivered") payload.delivered_at = new Date(statusForm.delivered_at).toISOString();
+    const { error } = await supabase.from("orders").update(payload).eq("id", statusOrder.id);
+    if (error) toast.error(error.message);
+    else { toast.success(`Order ${statusTarget}`); setStatusOrder(null); setStatusTarget(null); load(); }
   };
 
   const openTracking = (order: VendorOrder) => {
