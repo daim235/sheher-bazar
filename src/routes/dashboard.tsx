@@ -1284,6 +1284,9 @@ function MyOrdersTab() {
               🚚 {o.courier_name || "Delivery"}{o.tracking_number ? ` · Tracking: ${o.tracking_number}` : ""}{o.estimated_delivery_at ? ` · ETA ${new Date(o.estimated_delivery_at).toLocaleString()}` : ""}
             </div>
           )}
+          <div className="mt-3 border-t pt-3">
+            <OrderTimeline order={o} compact />
+          </div>
           {o.shipping_address && (
             <div className="mt-3 text-xs text-muted-foreground border-t pt-3">
               📍 {o.shipping_address} · 📞 {o.phone}
