@@ -730,7 +730,7 @@ function VendorOrdersTab() {
   const saveStatusChange = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!statusOrder || !statusTarget) return;
-    const payload: Partial<VendorOrder> = { status: statusTarget };
+    const payload: { status: OrderStatus; confirmed_at?: string; shipped_at?: string; delivered_at?: string } = { status: statusTarget };
     if (["confirmed", "shipped", "delivered"].includes(statusTarget)) payload.confirmed_at = new Date(statusForm.confirmed_at).toISOString();
     if (["shipped", "delivered"].includes(statusTarget)) payload.shipped_at = new Date(statusForm.shipped_at).toISOString();
     if (statusTarget === "delivered") payload.delivered_at = new Date(statusForm.delivered_at).toISOString();
