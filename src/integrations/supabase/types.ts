@@ -355,6 +355,7 @@ export type Database = {
         Row: {
           commission_amount: number
           commission_pct: number
+          confirmed_at: string | null
           courier_name: string | null
           created_at: string
           customer_id: string
@@ -367,6 +368,7 @@ export type Database = {
           payment_method: string
           payment_status: string
           phone: string | null
+          shipped_at: string | null
           shipping_address: string | null
           status: Database["public"]["Enums"]["order_status"]
           subtotal: number
@@ -378,6 +380,7 @@ export type Database = {
         Insert: {
           commission_amount?: number
           commission_pct?: number
+          confirmed_at?: string | null
           courier_name?: string | null
           created_at?: string
           customer_id: string
@@ -390,6 +393,7 @@ export type Database = {
           payment_method?: string
           payment_status?: string
           phone?: string | null
+          shipped_at?: string | null
           shipping_address?: string | null
           status?: Database["public"]["Enums"]["order_status"]
           subtotal?: number
@@ -401,6 +405,7 @@ export type Database = {
         Update: {
           commission_amount?: number
           commission_pct?: number
+          confirmed_at?: string | null
           courier_name?: string | null
           created_at?: string
           customer_id?: string
@@ -413,6 +418,7 @@ export type Database = {
           payment_method?: string
           payment_status?: string
           phone?: string | null
+          shipped_at?: string | null
           shipping_address?: string | null
           status?: Database["public"]["Enums"]["order_status"]
           subtotal?: number
