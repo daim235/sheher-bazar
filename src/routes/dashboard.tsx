@@ -25,6 +25,7 @@ import { AddressBook } from "@/components/AddressBook";
 import { Checkbox } from "@/components/ui/checkbox";
 import { InboxPanel } from "@/components/InboxPanel";
 import { CouponManager } from "@/components/CouponManager";
+import { OrderTimeline } from "@/components/OrderTimeline";
 
 const dashSearch = z.object({
   tab: fallback(
@@ -665,6 +666,9 @@ interface VendorOrder {
   phone: string | null;
   notes: string | null;
   created_at: string;
+  confirmed_at?: string | null;
+  shipped_at?: string | null;
+  delivered_at?: string | null;
   items: { id: string; product_name: string; unit_price: number; quantity: number }[];
 }
 function VendorOrdersTab() {
@@ -775,6 +779,9 @@ function VendorOrdersTab() {
               Delivery: {o.courier_name || "Courier"}{o.tracking_number ? ` · ${o.tracking_number}` : ""}{o.estimated_delivery_at ? ` · ETA ${new Date(o.estimated_delivery_at).toLocaleDateString()}` : ""}
             </div>
           )}
+          <div className="mt-3">
+            <OrderTimeline order={o} compact />
+          </div>
           <div className="mt-3 flex flex-wrap gap-2">
             <Button size="sm" variant="outline" onClick={() => setDetailOrder(o)}>
               <Eye className="h-3.5 w-3.5 mr-1" /> View details
@@ -1173,6 +1180,9 @@ interface MyOrder {
   courier_name?: string | null;
   tracking_number?: string | null;
   estimated_delivery_at?: string | null;
+  confirmed_at?: string | null;
+  shipped_at?: string | null;
+  delivered_at?: string | null;
   shipping_address: string | null;
   phone: string | null;
   created_at: string;
@@ -1274,6 +1284,9 @@ function MyOrdersTab() {
               🚚 {o.courier_name || "Delivery"}{o.tracking_number ? ` · Tracking: ${o.tracking_number}` : ""}{o.estimated_delivery_at ? ` · ETA ${new Date(o.estimated_delivery_at).toLocaleString()}` : ""}
             </div>
           )}
+          <div className="mt-3 border-t pt-3">
+            <OrderTimeline order={o} compact />
+          </div>
           {o.shipping_address && (
             <div className="mt-3 text-xs text-muted-foreground border-t pt-3">
               📍 {o.shipping_address} · 📞 {o.phone}
