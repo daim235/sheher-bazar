@@ -13,6 +13,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { useCart } from "@/lib/cart";
 import { useAuth } from "@/lib/auth";
 import { placeOrders } from "@/lib/api/orders";
+import { validateCoupon } from "@/lib/api/coupons";
 import { supabase } from "@/integrations/supabase/client";
 import { AddressPicker } from "@/components/AddressPicker";
 import type { Address } from "@/lib/api/addresses";
@@ -39,6 +40,9 @@ function CartPage() {
   const [saveDefault, setSaveDefault] = useState(true);
   const [hasSavedAddress, setHasSavedAddress] = useState(false);
   const [selectedAddressId, setSelectedAddressId] = useState<string | null>(null);
+  const [couponCode, setCouponCode] = useState("");
+  const [appliedCoupons, setAppliedCoupons] = useState<Record<string, { code: string; coupon_id: string; discount: number }>>({});
+  const [applyingCoupon, setApplyingCoupon] = useState(false);
 
   const handleSelectAddress = (a: Address) => {
     setSelectedAddressId(a.id);
@@ -85,6 +89,8 @@ function CartPage() {
         shipping_address: address.trim(),
         phone: phone.trim(),
         notes: notes.trim() || undefined,
+        payment_method: "cod",
+        coupons: appliedCoupons,
       });
       // Save as default for next time, if the user opted in.
       if (saveDefault && user) {
@@ -111,6 +117,38 @@ function CartPage() {
       setPlacing(false);
     }
   };
+
+  const vendorGroups = items.reduce((map, item) => {
+    const current = map.get(item.vendor_id) ?? { vendorId: item.vendor_id, subtotal: 0, items: 0 };
+    current.subtotal += item.price * item.quantity;
+    current.items += item.quantity;
+    map.set(item.vendor_id, current);
+    return map;
+  }, new Map<string, { vendorId: string; subtotal: number; items: number }>());
+
+  const applyCoupon = async () => {
+    if (!couponCode.trim()) return;
+    if (vendorGroups.size !== 1) {
+      toast.error("Use discount codes when your cart has items from one shop only");
+      return;
+    }
+    const group = Array.from(vendorGroups.values())[0];
+    setApplyingCoupon(true);
+    try {
+      const result = await validateCoupon(group.vendorId, couponCode, group.subtotal);
+      setAppliedCoupons({
+        [group.vendorId]: { code: result.coupon.code, coupon_id: result.coupon.id, discount: result.discount },
+      });
+      toast.success(`${result.coupon.code} applied`);
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "Invalid coupon");
+    } finally {
+      setApplyingCoupon(false);
+    }
+  };
+
+  const discountTotal = Object.values(appliedCoupons).reduce((sum, coupon) => sum + coupon.discount, 0);
+  const payableTotal = Math.max(0, total - discountTotal);
 
   if (count === 0) {
     return (
@@ -207,13 +245,29 @@ function CartPage() {
                 <span className="text-muted-foreground">Subtotal</span>
                 <span>Rs {total.toLocaleString()}</span>
               </div>
+              <div className="mt-3 space-y-2">
+                <Label htmlFor="coupon">Discount code</Label>
+                <div className="flex gap-2">
+                  <Input id="coupon" value={couponCode} onChange={(e) => setCouponCode(e.target.value.toUpperCase())} placeholder="Enter code" />
+                  <Button type="button" variant="outline" onClick={applyCoupon} disabled={applyingCoupon}>
+                    {applyingCoupon && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
+                    Apply
+                  </Button>
+                </div>
+              </div>
+              {discountTotal > 0 && (
+                <div className="flex justify-between text-sm mt-2 text-primary">
+                  <span>Discount</span>
+                  <span>- Rs {discountTotal.toLocaleString()}</span>
+                </div>
+              )}
               <div className="flex justify-between text-sm mt-1">
                 <span className="text-muted-foreground">Delivery</span>
                 <span>Pay on delivery</span>
               </div>
               <div className="flex justify-between font-bold text-lg mt-3">
                 <span>Total</span>
-                <span className="text-primary">Rs {total.toLocaleString()}</span>
+                <span className="text-primary">Rs {payableTotal.toLocaleString()}</span>
               </div>
               <Button onClick={handlePlace} disabled={placing} className="w-full mt-5 bg-gradient-primary text-primary-foreground">
                 {placing && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}

@@ -353,38 +353,71 @@ export type Database = {
       }
       orders: {
         Row: {
+          commission_amount: number
+          commission_pct: number
+          courier_name: string | null
           created_at: string
           customer_id: string
+          delivered_at: string | null
+          delivery_fee: number
+          discount_total: number
+          estimated_delivery_at: string | null
           id: string
           notes: string | null
+          payment_method: string
+          payment_status: string
           phone: string | null
           shipping_address: string | null
           status: Database["public"]["Enums"]["order_status"]
+          subtotal: number
           total: number
+          tracking_number: string | null
           updated_at: string
           vendor_id: string
         }
         Insert: {
+          commission_amount?: number
+          commission_pct?: number
+          courier_name?: string | null
           created_at?: string
           customer_id: string
+          delivered_at?: string | null
+          delivery_fee?: number
+          discount_total?: number
+          estimated_delivery_at?: string | null
           id?: string
           notes?: string | null
+          payment_method?: string
+          payment_status?: string
           phone?: string | null
           shipping_address?: string | null
           status?: Database["public"]["Enums"]["order_status"]
+          subtotal?: number
           total?: number
+          tracking_number?: string | null
           updated_at?: string
           vendor_id: string
         }
         Update: {
+          commission_amount?: number
+          commission_pct?: number
+          courier_name?: string | null
           created_at?: string
           customer_id?: string
+          delivered_at?: string | null
+          delivery_fee?: number
+          discount_total?: number
+          estimated_delivery_at?: string | null
           id?: string
           notes?: string | null
+          payment_method?: string
+          payment_status?: string
           phone?: string | null
           shipping_address?: string | null
           status?: Database["public"]["Enums"]["order_status"]
+          subtotal?: number
           total?: number
+          tracking_number?: string | null
           updated_at?: string
           vendor_id?: string
         }

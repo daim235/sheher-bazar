@@ -18,6 +18,15 @@ interface Props {
     id: string;
     customer_id: string;
     total: number;
+    subtotal?: number;
+    discount_total?: number;
+    delivery_fee?: number;
+    payment_method?: string;
+    payment_status?: string;
+    courier_name?: string | null;
+    tracking_number?: string | null;
+    estimated_delivery_at?: string | null;
+    commission_amount?: number;
     status: string;
     shipping_address: string | null;
     phone: string | null;
@@ -113,7 +122,26 @@ export function VendorOrderDetail({ open, onOpenChange, order }: Props) {
               <span>Total (COD)</span>
               <span className="text-primary">Rs {Number(order.total).toLocaleString()}</span>
             </div>
+            <div className="mt-2 space-y-1 text-xs text-muted-foreground">
+              <div className="flex justify-between"><span>Subtotal</span><span>Rs {Number(order.subtotal ?? order.total).toLocaleString()}</span></div>
+              {Number(order.discount_total ?? 0) > 0 && <div className="flex justify-between text-primary"><span>Discount</span><span>- Rs {Number(order.discount_total).toLocaleString()}</span></div>}
+              {Number(order.delivery_fee ?? 0) > 0 && <div className="flex justify-between"><span>Delivery</span><span>Rs {Number(order.delivery_fee).toLocaleString()}</span></div>}
+              {Number(order.commission_amount ?? 0) > 0 && <div className="flex justify-between"><span>Platform commission</span><span>Rs {Number(order.commission_amount).toLocaleString()}</span></div>}
+              <div className="flex justify-between"><span>Payment</span><span>{order.payment_method === "online" ? "Online" : "COD"} · {order.payment_status ?? "pending"}</span></div>
+            </div>
           </div>
+
+          {(order.courier_name || order.tracking_number || order.estimated_delivery_at) && (
+            <>
+              <Separator />
+              <div>
+                <div className="text-xs uppercase text-muted-foreground tracking-wide mb-2">Delivery</div>
+                <p className="rounded-md bg-muted/50 p-3">
+                  {order.courier_name || "Courier not set"}{order.tracking_number ? ` · ${order.tracking_number}` : ""}{order.estimated_delivery_at ? ` · ETA ${new Date(order.estimated_delivery_at).toLocaleString()}` : ""}
+                </p>
+              </div>
+            </>
+          )}
 
           {order.notes && (
             <>

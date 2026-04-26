@@ -651,6 +651,15 @@ interface VendorOrder {
   id: string;
   customer_id: string;
   total: number;
+  subtotal?: number;
+  discount_total?: number;
+  delivery_fee?: number;
+  payment_method?: string;
+  payment_status?: string;
+  courier_name?: string | null;
+  tracking_number?: string | null;
+  estimated_delivery_at?: string | null;
+  commission_amount?: number;
   status: OrderStatus;
   shipping_address: string | null;
   phone: string | null;
@@ -662,6 +671,8 @@ function VendorOrdersTab() {
   const [orders, setOrders] = useState<VendorOrder[]>([]);
   const [loading, setLoading] = useState(true);
   const [detailOrder, setDetailOrder] = useState<VendorOrder | null>(null);
+  const [trackingOrder, setTrackingOrder] = useState<VendorOrder | null>(null);
+  const [trackingForm, setTrackingForm] = useState({ courier_name: "", tracking_number: "", estimated_delivery_at: "" });
 
   const load = async () => {
     setLoading(true);
@@ -691,6 +702,27 @@ function VendorOrdersTab() {
     } catch (e: unknown) {
       toast.error(e instanceof Error ? e.message : "Could not update");
     }
+  };
+
+  const openTracking = (order: VendorOrder) => {
+    setTrackingOrder(order);
+    setTrackingForm({
+      courier_name: order.courier_name ?? "",
+      tracking_number: order.tracking_number ?? "",
+      estimated_delivery_at: order.estimated_delivery_at ? order.estimated_delivery_at.slice(0, 16) : "",
+    });
+  };
+
+  const saveTracking = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!trackingOrder) return;
+    const { error } = await supabase.from("orders").update({
+      courier_name: trackingForm.courier_name || null,
+      tracking_number: trackingForm.tracking_number || null,
+      estimated_delivery_at: trackingForm.estimated_delivery_at ? new Date(trackingForm.estimated_delivery_at).toISOString() : null,
+    }).eq("id", trackingOrder.id);
+    if (error) toast.error(error.message);
+    else { toast.success("Delivery details saved"); setTrackingOrder(null); load(); }
   };
 
   if (loading) return <Loader2 className="h-6 w-6 animate-spin text-primary mx-auto mt-10" />;
@@ -732,10 +764,22 @@ function VendorOrdersTab() {
             </div>
             <div className="font-bold text-primary">Total: Rs {Number(o.total).toLocaleString()}</div>
           </div>
+          <div className="mt-2 grid grid-cols-2 sm:grid-cols-4 gap-2 text-xs text-muted-foreground">
+            <span>Payment: {o.payment_method === "online" ? "Online" : "COD"}</span>
+            <span>Status: {o.payment_status ?? "pending"}</span>
+            {o.discount_total ? <span>Discount: Rs {Number(o.discount_total).toLocaleString()}</span> : <span>No discount</span>}
+            {o.commission_amount ? <span>Commission: Rs {Number(o.commission_amount).toLocaleString()}</span> : <span>Commission: —</span>}
+          </div>
+          {(o.courier_name || o.tracking_number || o.estimated_delivery_at) && (
+            <div className="mt-2 rounded-md bg-accent/50 px-3 py-2 text-xs">
+              Delivery: {o.courier_name || "Courier"}{o.tracking_number ? ` · ${o.tracking_number}` : ""}{o.estimated_delivery_at ? ` · ETA ${new Date(o.estimated_delivery_at).toLocaleDateString()}` : ""}
+            </div>
+          )}
           <div className="mt-3 flex flex-wrap gap-2">
             <Button size="sm" variant="outline" onClick={() => setDetailOrder(o)}>
               <Eye className="h-3.5 w-3.5 mr-1" /> View details
             </Button>
+            {(o.status === "confirmed" || o.status === "shipped") && <Button size="sm" variant="outline" onClick={() => openTracking(o)}>Delivery info</Button>}
             {o.status === "pending" && <Button size="sm" onClick={() => setStatus(o.id, "confirmed")}>Confirm</Button>}
             {o.status === "confirmed" && <Button size="sm" onClick={() => setStatus(o.id, "shipped")}>Mark shipped</Button>}
             {o.status === "shipped" && <Button size="sm" onClick={() => setStatus(o.id, "delivered")}>Mark delivered</Button>}
@@ -746,6 +790,20 @@ function VendorOrdersTab() {
         </Card>
       ))}
       <VendorOrderDetail open={!!detailOrder} onOpenChange={(v) => !v && setDetailOrder(null)} order={detailOrder} />
+      <Dialog open={!!trackingOrder} onOpenChange={(v) => !v && setTrackingOrder(null)}>
+        <DialogContent>
+          <DialogHeader><DialogTitle>Delivery tracking</DialogTitle></DialogHeader>
+          <form onSubmit={saveTracking} className="space-y-3">
+            <div><Label>Courier / rider</Label><Input value={trackingForm.courier_name} onChange={(e) => setTrackingForm({ ...trackingForm, courier_name: e.target.value })} placeholder="e.g. Local rider" /></div>
+            <div><Label>Tracking number</Label><Input value={trackingForm.tracking_number} onChange={(e) => setTrackingForm({ ...trackingForm, tracking_number: e.target.value })} placeholder="Optional" /></div>
+            <div><Label>Estimated delivery</Label><Input type="datetime-local" value={trackingForm.estimated_delivery_at} onChange={(e) => setTrackingForm({ ...trackingForm, estimated_delivery_at: e.target.value })} /></div>
+            <DialogFooter>
+              <Button type="button" variant="outline" onClick={() => setTrackingOrder(null)}>Cancel</Button>
+              <Button type="submit" className="bg-gradient-primary text-primary-foreground">Save</Button>
+            </DialogFooter>
+          </form>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
@@ -1107,6 +1165,14 @@ interface MyOrder {
   id: string;
   status: OrderStatus;
   total: number;
+  subtotal?: number;
+  discount_total?: number;
+  delivery_fee?: number;
+  payment_method?: string;
+  payment_status?: string;
+  courier_name?: string | null;
+  tracking_number?: string | null;
+  estimated_delivery_at?: string | null;
   shipping_address: string | null;
   phone: string | null;
   created_at: string;
@@ -1185,7 +1251,7 @@ function MyOrdersTab() {
             </div>
             <div className="text-right">
               <div className="font-bold text-primary text-lg">Rs {Number(o.total).toLocaleString()}</div>
-              <div className="text-xs text-muted-foreground">Cash on delivery</div>
+              <div className="text-xs text-muted-foreground">{o.payment_method === "online" ? "Online payment" : "Cash on delivery"} · {o.payment_status ?? "pending"}</div>
             </div>
           </div>
           <ul className="mt-3 text-sm space-y-1 border-t pt-3">
@@ -1196,6 +1262,18 @@ function MyOrdersTab() {
               </li>
             ))}
           </ul>
+          {(Number(o.discount_total ?? 0) > 0 || Number(o.delivery_fee ?? 0) > 0) && (
+            <div className="mt-3 space-y-1 text-xs border-t pt-3">
+              <div className="flex justify-between"><span className="text-muted-foreground">Subtotal</span><span>Rs {Number(o.subtotal ?? o.total).toLocaleString()}</span></div>
+              {Number(o.discount_total ?? 0) > 0 && <div className="flex justify-between text-primary"><span>Discount</span><span>- Rs {Number(o.discount_total).toLocaleString()}</span></div>}
+              {Number(o.delivery_fee ?? 0) > 0 && <div className="flex justify-between"><span className="text-muted-foreground">Delivery</span><span>Rs {Number(o.delivery_fee).toLocaleString()}</span></div>}
+            </div>
+          )}
+          {(o.courier_name || o.tracking_number || o.estimated_delivery_at) && (
+            <div className="mt-3 rounded-md bg-accent/50 px-3 py-2 text-xs">
+              🚚 {o.courier_name || "Delivery"}{o.tracking_number ? ` · Tracking: ${o.tracking_number}` : ""}{o.estimated_delivery_at ? ` · ETA ${new Date(o.estimated_delivery_at).toLocaleString()}` : ""}
+            </div>
+          )}
           {o.shipping_address && (
             <div className="mt-3 text-xs text-muted-foreground border-t pt-3">
               📍 {o.shipping_address} · 📞 {o.phone}

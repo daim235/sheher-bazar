@@ -21,7 +21,7 @@ import {
   listPendingVendors,
   listPendingProviders,
 } from "@/lib/api/approvals";
-import { Loader2, ShieldCheck, Store, Users, Package, Calendar } from "lucide-react";
+import { Loader2, ShieldCheck, Store, Users, Package, Calendar, Settings, Tag } from "lucide-react";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/admin")({
@@ -93,7 +93,7 @@ function AdminPage() {
 
       <main className="mx-auto max-w-7xl px-4 sm:px-6 py-6">
         <Tabs defaultValue="vendors">
-          <TabsList className="grid grid-cols-2 sm:grid-cols-4 w-full max-w-2xl">
+          <TabsList className="grid grid-cols-2 sm:grid-cols-6 w-full max-w-4xl">
             <TabsTrigger value="vendors" className="gap-1.5">
               <Store className="h-4 w-4" /> Vendors
             </TabsTrigger>
@@ -105,6 +105,12 @@ function AdminPage() {
             </TabsTrigger>
             <TabsTrigger value="bookings" className="gap-1.5">
               <Calendar className="h-4 w-4" /> Bookings
+            </TabsTrigger>
+            <TabsTrigger value="coupons" className="gap-1.5">
+              <Tag className="h-4 w-4" /> Coupons
+            </TabsTrigger>
+            <TabsTrigger value="settings" className="gap-1.5">
+              <Settings className="h-4 w-4" /> Settings
             </TabsTrigger>
           </TabsList>
 
@@ -119,6 +125,12 @@ function AdminPage() {
           </TabsContent>
           <TabsContent value="bookings" className="mt-6">
             <BookingsPanel />
+          </TabsContent>
+          <TabsContent value="coupons" className="mt-6">
+            <CouponsPanel />
+          </TabsContent>
+          <TabsContent value="settings" className="mt-6">
+            <SettingsPanel />
           </TabsContent>
         </Tabs>
       </main>
@@ -446,6 +458,88 @@ function BookingsPanel() {
           </TableBody>
         </Table>
       )}
+    </Card>
+  );
+}
+
+// ---------- Coupons ----------
+function CouponsPanel() {
+  const [rows, setRows] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    (async () => {
+      const { data, error } = await supabase
+        .from("coupons")
+        .select("*, vendors(shop_name)")
+        .order("created_at", { ascending: false })
+        .limit(100);
+      if (error) toast.error(error.message);
+      setRows(data ?? []);
+      setLoading(false);
+    })();
+  }, []);
+
+  return (
+    <Card className="p-4">
+      <h2 className="font-semibold mb-4">Marketplace discount codes</h2>
+      {loading ? <Loader2 className="h-5 w-5 animate-spin" /> : rows.length === 0 ? (
+        <p className="text-sm text-muted-foreground">No coupons yet.</p>
+      ) : (
+        <Table>
+          <TableHeader><TableRow><TableHead>Code</TableHead><TableHead>Shop</TableHead><TableHead>Discount</TableHead><TableHead>Used</TableHead><TableHead>Status</TableHead></TableRow></TableHeader>
+          <TableBody>
+            {rows.map((c) => (
+              <TableRow key={c.id}>
+                <TableCell className="font-mono font-medium">{c.code}</TableCell>
+                <TableCell>{c.vendors?.shop_name ?? "—"}</TableCell>
+                <TableCell>{c.discount_type === "percent" ? `${c.discount_value}%` : `Rs ${Number(c.discount_value).toLocaleString()}`}</TableCell>
+                <TableCell>{c.redemption_count}{c.max_redemptions ? `/${c.max_redemptions}` : ""}</TableCell>
+                <TableCell><StatusBadge status={c.is_active ? "approved" : "none"} /></TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      )}
+    </Card>
+  );
+}
+
+// ---------- Marketplace settings ----------
+function SettingsPanel() {
+  const [settings, setSettings] = useState<any | null>(null);
+  const [vendorCommission, setVendorCommission] = useState("0");
+  const [bookingCommission, setBookingCommission] = useState("10");
+  const [saving, setSaving] = useState(false);
+
+  useEffect(() => {
+    supabase.from("platform_settings").select("*").order("updated_at", { ascending: false }).limit(1).maybeSingle().then(({ data }) => {
+      setSettings(data);
+      setVendorCommission(String(data?.vendor_commission_pct ?? 0));
+      setBookingCommission(String(data?.booking_commission_pct ?? 10));
+    });
+  }, []);
+
+  const save = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setSaving(true);
+    const payload = { vendor_commission_pct: Number(vendorCommission) || 0, booking_commission_pct: Number(bookingCommission) || 0 };
+    const query = settings?.id
+      ? supabase.from("platform_settings").update(payload).eq("id", settings.id)
+      : supabase.from("platform_settings").insert(payload);
+    const { error } = await query;
+    setSaving(false);
+    if (error) toast.error(error.message); else toast.success("Marketplace settings saved");
+  };
+
+  return (
+    <Card className="p-4 max-w-xl">
+      <h2 className="font-semibold mb-4">Marketplace settings</h2>
+      <form onSubmit={save} className="space-y-4">
+        <div><label className="text-sm font-medium">Vendor order commission (%)</label><input className="mt-1 w-full rounded-md border bg-background px-3 py-2 text-sm" type="number" min="0" max="100" value={vendorCommission} onChange={(e) => setVendorCommission(e.target.value)} /></div>
+        <div><label className="text-sm font-medium">Service booking commission (%)</label><input className="mt-1 w-full rounded-md border bg-background px-3 py-2 text-sm" type="number" min="0" max="100" value={bookingCommission} onChange={(e) => setBookingCommission(e.target.value)} /></div>
+        <Button disabled={saving}>{saving && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}Save settings</Button>
+      </form>
     </Card>
   );
 }
