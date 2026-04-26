@@ -818,9 +818,9 @@ function VendorOrdersTab() {
               <Eye className="h-3.5 w-3.5 mr-1" /> View details
             </Button>
             {(o.status === "confirmed" || o.status === "shipped") && <Button size="sm" variant="outline" onClick={() => openTracking(o)}>Delivery info</Button>}
-            {o.status === "pending" && <Button size="sm" onClick={() => setStatus(o.id, "confirmed")}>Confirm</Button>}
-            {o.status === "confirmed" && <Button size="sm" onClick={() => setStatus(o.id, "shipped")}>Mark shipped</Button>}
-            {o.status === "shipped" && <Button size="sm" onClick={() => setStatus(o.id, "delivered")}>Mark delivered</Button>}
+            {o.status === "pending" && <Button size="sm" onClick={() => openStatusDialog(o, "confirmed")}>Confirm</Button>}
+            {o.status === "confirmed" && <Button size="sm" onClick={() => openStatusDialog(o, "shipped")}>Mark shipped</Button>}
+            {o.status === "shipped" && <Button size="sm" onClick={() => openStatusDialog(o, "delivered")}>Mark delivered</Button>}
             {(o.status === "pending" || o.status === "confirmed") && (
               <Button size="sm" variant="outline" onClick={() => setStatus(o.id, "cancelled")}>Cancel</Button>
             )}
@@ -828,6 +828,27 @@ function VendorOrdersTab() {
         </Card>
       ))}
       <VendorOrderDetail open={!!detailOrder} onOpenChange={(v) => !v && setDetailOrder(null)} order={detailOrder} />
+      <Dialog open={!!statusOrder} onOpenChange={(v) => { if (!v) { setStatusOrder(null); setStatusTarget(null); } }}>
+        <DialogContent>
+          <DialogHeader><DialogTitle>Update order status</DialogTitle></DialogHeader>
+          <form onSubmit={saveStatusChange} className="space-y-3">
+            <div className="text-sm text-muted-foreground">Set the timestamp to show in the delivery timeline.</div>
+            {statusTarget && ["confirmed", "shipped", "delivered"].includes(statusTarget) && (
+              <div><Label>Confirmed at</Label><Input required type="datetime-local" value={statusForm.confirmed_at} onChange={(e) => setStatusForm({ ...statusForm, confirmed_at: e.target.value })} /></div>
+            )}
+            {statusTarget && ["shipped", "delivered"].includes(statusTarget) && (
+              <div><Label>Shipped at</Label><Input required type="datetime-local" value={statusForm.shipped_at} onChange={(e) => setStatusForm({ ...statusForm, shipped_at: e.target.value })} /></div>
+            )}
+            {statusTarget === "delivered" && (
+              <div><Label>Delivered at</Label><Input required type="datetime-local" value={statusForm.delivered_at} onChange={(e) => setStatusForm({ ...statusForm, delivered_at: e.target.value })} /></div>
+            )}
+            <DialogFooter>
+              <Button type="button" variant="outline" onClick={() => { setStatusOrder(null); setStatusTarget(null); }}>Cancel</Button>
+              <Button type="submit" className="bg-gradient-primary text-primary-foreground">Save status</Button>
+            </DialogFooter>
+          </form>
+        </DialogContent>
+      </Dialog>
       <Dialog open={!!trackingOrder} onOpenChange={(v) => !v && setTrackingOrder(null)}>
         <DialogContent>
           <DialogHeader><DialogTitle>Delivery tracking</DialogTitle></DialogHeader>
