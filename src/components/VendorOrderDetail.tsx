@@ -9,6 +9,7 @@ import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { getOrCreateConversation } from "@/lib/api/conversations";
+import { OrderTimeline } from "@/components/OrderTimeline";
 
 interface OrderItem { id: string; product_name: string; unit_price: number; quantity: number; }
 interface Props {
@@ -32,6 +33,9 @@ interface Props {
     phone: string | null;
     notes: string | null;
     created_at: string;
+    confirmed_at?: string | null;
+    shipped_at?: string | null;
+    delivered_at?: string | null;
     items: OrderItem[];
   } | null;
 }
@@ -105,6 +109,10 @@ export function VendorOrderDetail({ open, onOpenChange, order }: Props) {
               </Button>
             </div>
           </div>
+
+          <Separator />
+
+          <OrderTimeline order={order} />
 
           <Separator />
 
