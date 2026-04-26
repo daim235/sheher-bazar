@@ -677,6 +677,9 @@ function VendorOrdersTab() {
   const [detailOrder, setDetailOrder] = useState<VendorOrder | null>(null);
   const [trackingOrder, setTrackingOrder] = useState<VendorOrder | null>(null);
   const [trackingForm, setTrackingForm] = useState({ courier_name: "", tracking_number: "", estimated_delivery_at: "" });
+  const [statusOrder, setStatusOrder] = useState<VendorOrder | null>(null);
+  const [statusTarget, setStatusTarget] = useState<OrderStatus | null>(null);
+  const [statusForm, setStatusForm] = useState({ confirmed_at: "", shipped_at: "", delivered_at: "" });
 
   const load = async () => {
     setLoading(true);
@@ -706,6 +709,34 @@ function VendorOrdersTab() {
     } catch (e: unknown) {
       toast.error(e instanceof Error ? e.message : "Could not update");
     }
+  };
+
+  const toDateTimeLocal = (value?: string | null) => {
+    const date = value ? new Date(value) : new Date();
+    return new Date(date.getTime() - date.getTimezoneOffset() * 60000).toISOString().slice(0, 16);
+  };
+
+  const openStatusDialog = (order: VendorOrder, status: OrderStatus) => {
+    setStatusOrder(order);
+    setStatusTarget(status);
+    const now = toDateTimeLocal();
+    setStatusForm({
+      confirmed_at: order.confirmed_at ? toDateTimeLocal(order.confirmed_at) : now,
+      shipped_at: order.shipped_at ? toDateTimeLocal(order.shipped_at) : now,
+      delivered_at: order.delivered_at ? toDateTimeLocal(order.delivered_at) : now,
+    });
+  };
+
+  const saveStatusChange = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!statusOrder || !statusTarget) return;
+    const payload: { status: OrderStatus; confirmed_at?: string; shipped_at?: string; delivered_at?: string } = { status: statusTarget };
+    if (["confirmed", "shipped", "delivered"].includes(statusTarget)) payload.confirmed_at = new Date(statusForm.confirmed_at).toISOString();
+    if (["shipped", "delivered"].includes(statusTarget)) payload.shipped_at = new Date(statusForm.shipped_at).toISOString();
+    if (statusTarget === "delivered") payload.delivered_at = new Date(statusForm.delivered_at).toISOString();
+    const { error } = await supabase.from("orders").update(payload).eq("id", statusOrder.id);
+    if (error) toast.error(error.message);
+    else { toast.success(`Order ${statusTarget}`); setStatusOrder(null); setStatusTarget(null); load(); }
   };
 
   const openTracking = (order: VendorOrder) => {
@@ -787,9 +818,9 @@ function VendorOrdersTab() {
               <Eye className="h-3.5 w-3.5 mr-1" /> View details
             </Button>
             {(o.status === "confirmed" || o.status === "shipped") && <Button size="sm" variant="outline" onClick={() => openTracking(o)}>Delivery info</Button>}
-            {o.status === "pending" && <Button size="sm" onClick={() => setStatus(o.id, "confirmed")}>Confirm</Button>}
-            {o.status === "confirmed" && <Button size="sm" onClick={() => setStatus(o.id, "shipped")}>Mark shipped</Button>}
-            {o.status === "shipped" && <Button size="sm" onClick={() => setStatus(o.id, "delivered")}>Mark delivered</Button>}
+            {o.status === "pending" && <Button size="sm" onClick={() => openStatusDialog(o, "confirmed")}>Confirm</Button>}
+            {o.status === "confirmed" && <Button size="sm" onClick={() => openStatusDialog(o, "shipped")}>Mark shipped</Button>}
+            {o.status === "shipped" && <Button size="sm" onClick={() => openStatusDialog(o, "delivered")}>Mark delivered</Button>}
             {(o.status === "pending" || o.status === "confirmed") && (
               <Button size="sm" variant="outline" onClick={() => setStatus(o.id, "cancelled")}>Cancel</Button>
             )}
@@ -797,6 +828,27 @@ function VendorOrdersTab() {
         </Card>
       ))}
       <VendorOrderDetail open={!!detailOrder} onOpenChange={(v) => !v && setDetailOrder(null)} order={detailOrder} />
+      <Dialog open={!!statusOrder} onOpenChange={(v) => { if (!v) { setStatusOrder(null); setStatusTarget(null); } }}>
+        <DialogContent>
+          <DialogHeader><DialogTitle>Update order status</DialogTitle></DialogHeader>
+          <form onSubmit={saveStatusChange} className="space-y-3">
+            <div className="text-sm text-muted-foreground">Set the timestamp to show in the delivery timeline.</div>
+            {statusTarget && ["confirmed", "shipped", "delivered"].includes(statusTarget) && (
+              <div><Label>Confirmed at</Label><Input required type="datetime-local" value={statusForm.confirmed_at} onChange={(e) => setStatusForm({ ...statusForm, confirmed_at: e.target.value })} /></div>
+            )}
+            {statusTarget && ["shipped", "delivered"].includes(statusTarget) && (
+              <div><Label>Shipped at</Label><Input required type="datetime-local" value={statusForm.shipped_at} onChange={(e) => setStatusForm({ ...statusForm, shipped_at: e.target.value })} /></div>
+            )}
+            {statusTarget === "delivered" && (
+              <div><Label>Delivered at</Label><Input required type="datetime-local" value={statusForm.delivered_at} onChange={(e) => setStatusForm({ ...statusForm, delivered_at: e.target.value })} /></div>
+            )}
+            <DialogFooter>
+              <Button type="button" variant="outline" onClick={() => { setStatusOrder(null); setStatusTarget(null); }}>Cancel</Button>
+              <Button type="submit" className="bg-gradient-primary text-primary-foreground">Save status</Button>
+            </DialogFooter>
+          </form>
+        </DialogContent>
+      </Dialog>
       <Dialog open={!!trackingOrder} onOpenChange={(v) => !v && setTrackingOrder(null)}>
         <DialogContent>
           <DialogHeader><DialogTitle>Delivery tracking</DialogTitle></DialogHeader>
